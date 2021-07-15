@@ -1,35 +1,84 @@
 <template>
-  <h4>Define rule params</h4>
-  <section>
-    <div class="mode">&lt;/&gt; source code</div>
-    <h4>Hello world</h4>
-  </section>
-  <h4 class="func-title">Define rule function</h4>
-  <section v-loading="monacoLoading" class="editor" ref="funcContainer" />
+  <div class="editor">
+    <div class="container" ref="container" v-loading="monacoLoading">
+    </div>
+    <div class="control">
+      <button>保存</button>
+      <input type="checkbox" >
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue'
+import { defineComponent, inject, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue'
 import type Monaco from 'monaco-editor'
-import { monaco as monacoNamespace, monacoGetter } from '@/shared/monaco'
+import { monaco, monacoGetter } from '@/shared/monaco'
+import { ruleContext } from '@/shared/rules'
+import { Rule } from '@/typings'
 
-let funcEditor: Monaco.editor.IStandaloneCodeEditor | null = null
-let paramEditor: Monaco.editor.IStandaloneCodeEditor | null = null
+let editor: Monaco.editor.IStandaloneCodeEditor | null = null
+let inited = false
+const initMonaco = () => {
+  if (inited) return
+  // https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-configure-javascript-defaults
+  monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: false,
+    noSyntaxValidation: false
+  })
+  monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+    allowJs: true,
+    target: monaco.languages.typescript.ScriptTarget.ES2016,
+    allowNonTsExtensions: true,
+    checkJs: true,
+    noLib: true,
+    lib: ['ES5', 'ES2015', 'ESNext']
+  })
+  monaco.languages.typescript.typescriptDefaults.addExtraLib([
+    'declare const defineRule: <T extends {}>(f: (input: T) => string | Promise<string>) => typeof f'
+  ].join('\n'), `global.d.ts`)
+  inited = true
+}
 
 export default defineComponent({
-  props: {},
+  props: {
+    rule: {
+      type: Object as PropType<Rule>,
+      required: true,
+    }
+  },
   emits: [],
   setup(props, { emit }){
+    const timer = ref()
     const monacoLoading = ref(true)
-    const funcContainer = ref()
-    const funcCode = ref('')
+    const container = ref()
+    const code = ref(props.rule.func || '')
+    const { update } = inject(ruleContext)!
 
-    const initFuncEditor = async () => {
+    watch(() => props.rule.func, f => {
+      code.value = f || ''
+    })
+
+    const syncCode = () => {
+      update({
+        ...props.rule,
+        func: code.value || '',
+      })
+    }
+
+    const graceSyncCode = () => {
+      clearTimeout(timer.value)
+      timer.value = setTimeout(() => {
+        syncCode()
+      }, 1000)
+    }
+
+    const initEditor = async () => {
       monacoLoading.value = true
       await monacoGetter()
+      initMonaco()
       monacoLoading.value = false
-      funcEditor = monacoNamespace.editor.create(funcContainer.value!, {
-        value: funcCode.value,
+      editor = monaco.editor.create(container.value!, {
+        value: code.value,
         language: 'typescript',
         theme: 'vs-light',
         automaticLayout: true,
@@ -40,17 +89,28 @@ export default defineComponent({
           verticalScrollbarSize: 4
         }
       })
-      funcEditor.onDidChangeModelContent(() => {
-        funcEditor && (funcCode.value = funcEditor.getValue())
+      editor.onDidChangeModelContent(() => {
+        if (editor) {
+          code.value = editor.getValue()
+          graceSyncCode()
+        }
       })
     }
 
     onMounted(() => {
-      initFuncEditor()
+      initEditor()
+    })
+
+    onBeforeUnmount(() => {
+      if (editor) {
+        console.log('dispose')
+        editor.dispose()
+        editor = null
+      }
     })
 
     return {
-      funcContainer,
+      container,
       monacoLoading,
     }
   }
@@ -58,11 +118,17 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-section {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.editor {
+  width: 100%;
+  height: 100%;
   position: relative;
+  padding: 10px 0;
+  background: #fff;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
 }
 
 h4 {
@@ -89,9 +155,13 @@ h4 {
   cursor: pointer;
 }
 
-.editor {
-  width: 100%;
-  height: 360px;
-  padding: 10px 0;
+.control {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 4px;
 }
 </style>

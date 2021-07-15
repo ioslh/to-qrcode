@@ -15,8 +15,7 @@
 <script lang="ts">
 import { defineComponent, inject, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getRules, ruleContext } from '@/shared/rules'
-import RuleImplement from '@/models/rule'
+import { ruleContext } from '@/shared/rules'
 import builtinRules from '@/shared/builtin'
 
 const NAME_PATTERN = /^[-_a-zA-Z0-9]+$/
@@ -28,7 +27,7 @@ export default defineComponent({
     const router = useRouter()
     const name = ref('')
     const error = ref('')
-    const { rules, addRule } = inject(ruleContext)!
+    const { rules, add } = inject(ruleContext)!
     const validateName = () => {
       if (!name.value) {
         throw new Error('name cannot be empty')
@@ -46,8 +45,7 @@ export default defineComponent({
     const submit = async () => {
       try {
         await validateName()
-        const rule = new RuleImplement({ name: name.value}).sync()
-        addRule(rule.toJSON())
+        add({ name: name.value })
         router.push(`/rules/${name.value}`)
       } catch (e) {
         error.value = e.message

@@ -1,11 +1,16 @@
 import { Rule } from '@/typings'
-import RuleImplement from '@/models/rule'
 
-const builtinRules: Rule[] = [
+export default [
   {
     name: 'text',
     desc: 'Any text to qrcode',
-    func: '',
+    func: `interface Input {
+      text: string
+  }
+  
+  defineRule((i: Input) => {
+      return i.text
+  })`,
     params: [],
     builtin: true,
   },
@@ -16,6 +21,4 @@ const builtinRules: Rule[] = [
     params: [],
     builtin: true,
   },
-]
-
-export default builtinRules.map(rule => new RuleImplement(rule))
+] as Rule[]

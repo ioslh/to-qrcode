@@ -1,13 +1,13 @@
 <template>
-  <div class="empty" v-if="!name">
+  <div class="empty" v-if="!currentRule">
     <i class="iconfont iconempty"/>
-    <p>Empty rule name</p>
+    <p>The rule "<strong>{{ name }}</strong>" is not existed</p>
   </div>
   <template v-else>
     <header>
       <div class="intro">
         <h2>{{ name }}</h2>
-        <div class="desc">hello world</div>
+        <div class="desc" v-if="currentRule.desc">{{ currentRule.desc }}</div>
       </div>
       <div class="menu">
         <a
@@ -19,24 +19,24 @@
       </div>
     </header>
     <section>
-      <div class="inner">
-        <generate v-if="menu === 'gen'" />
-        <settings v-else-if="menu === 'settings'" />
-        <editor v-else-if="menu === 'edit'" />
-        <div v-else>
-          oops
-        </div>
-      </div>
+      <settings v-if="menu === 'settings'" :rule="currentRule" />
+      <template v-else-if="menu === 'edit'">
+        <editor v-if="!currentRule.builtin" :rule="currentRule" />
+        <readonly v-else :rule="currentRule" />  
+      </template>
+      <generate v-else :rule="currentRule" />
     </section>
   </template>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, watch } from 'vue'
+import { computed, defineComponent, onMounted, ref, inject } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Generate from '@/pages/generate.vue'
 import Settings from '@/pages/settings.vue'
 import Editor from '@/pages/editor.vue'
+import { getRules, ruleContext } from '@/shared/rules'
+import Readonly from '@/components/readonly.vue'
 
 interface MenuItem {
   name: string
@@ -48,15 +48,21 @@ export default defineComponent({
     Generate,
     Settings,
     Editor,
+    Readonly,
   },
   props: {},
   emits: [],
   setup(props, { emit }){
+    const { rules } = inject(ruleContext)!
     const route = useRoute()
     const router = useRouter()
     const name = computed(() => {
       return route.params.name as string
     })
+    const currentRule = computed(() => {
+      return rules.value.find(r => r.name === name.value)
+    })
+
     const menus = ref<MenuItem[]>([])
     const menu = computed({
       get: () => route.params.menu as string || 'gen',
@@ -96,6 +102,7 @@ export default defineComponent({
       name,
       menu,
       menus,
+      currentRule,
       redirectMenu,
     }
   }
@@ -170,11 +177,6 @@ h2 {
 
 section {
   height: calc(100% - 99px);
-  padding: 20px;
-}
-
-.inner {
-  width: 100%;
-  height: 100%;
+  position: relative;
 }
 </style>
