@@ -5,7 +5,10 @@
   </div>
   <template v-else>
     <header>
-      <h2>{{ name }}</h2>
+      <div class="intro">
+        <h2>{{ name }}</h2>
+        <div class="desc">hello world</div>
+      </div>
       <div class="menu">
         <a
           v-for="m in menus"
@@ -15,13 +18,23 @@
         >{{ m.name }}</a>
       </div>
     </header>
-    <section>content here</section>
+    <section>
+      <generate v-if="menu === 'gen'" />
+      <settings v-else-if="menu === 'settings'" />
+      <editor v-else-if="menu === 'edit'" />
+      <div v-else>
+        oops
+      </div>
+    </section>
   </template>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import Generate from '@/pages/generate.vue'
+import Settings from '@/pages/settings.vue'
+import Editor from '@/pages/editor.vue'
 
 interface MenuItem {
   name: string
@@ -29,6 +42,11 @@ interface MenuItem {
 }
 
 export default defineComponent({
+  components: {
+    Generate,
+    Settings,
+    Editor,
+  },
   props: {},
   emits: [],
   setup(props, { emit }){
@@ -39,7 +57,7 @@ export default defineComponent({
     })
     const menus = ref<MenuItem[]>([])
     const menu = computed({
-      get: () => route.params.menu as string || 'use',
+      get: () => route.params.menu as string || 'gen',
       set: (v) => {
         router.push({
           params: {
@@ -108,6 +126,24 @@ header {
   background: #fff;
   border-bottom: 1px solid #ddd;
   font-size: 30px;
+}
+
+.intro {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+h2 {
+  flex-shrink: 0;
+}
+
+.desc {
+  font-size: 14px;
+  margin-left: 20px;
+  color: #aaa;
+  overflow: hidden;
 }
 
 .menu {

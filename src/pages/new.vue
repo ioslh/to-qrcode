@@ -36,11 +36,11 @@ export default defineComponent({
       if (!NAME_PATTERN.test(name.value)) {
         throw new Error(`name '${name.value}' is not match the pattern '${NAME_PATTERN}'`)
       }
-      if (getRules().find(rule => rule.name === name.value)) {
-        throw new Error(`name '${name.value}' is already used`)
-      }
       if (builtinRules.find(rule => rule.name === name.value)) {
         throw new Error(`name '${name.value}' is already used as builtin rule`)
+      }
+      if (rules.value.find(rule => rule.name === name.value)) {
+        throw new Error(`name '${name.value}' is already used`)
       }
     }
     const submit = async () => {

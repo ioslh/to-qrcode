@@ -22,15 +22,12 @@ import builtinRules from '@/shared/builtin'
 import { getRules, ruleContext } from '@/shared/rules'
 import { Rule } from './typings'
 
-
 export default defineComponent({
   setup() {
     const keyword = ref('')
     const rules = ref<Rule[]>([])
 
-    const addRule = (rule: Rule) => {
-      rules.value.unshift(rule)
-    }
+    const addRule = (rule: Rule) => rules.value.unshift(rule)
 
     provide(ruleContext, { rules, addRule })
 
