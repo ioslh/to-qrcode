@@ -137,6 +137,7 @@ header {
 
 h2 {
   flex-shrink: 0;
+  font-size: 26px;
 }
 
 .desc {
@@ -151,7 +152,7 @@ h2 {
   bottom: -1px;
   a {
     display: inline-block;
-    font-size: 14px;
+    font-size: 12px;
     text-decoration: none;
     padding: 6px 0;
     border-bottom: 2px solid transparent;
