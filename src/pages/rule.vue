@@ -19,11 +19,13 @@
       </div>
     </header>
     <section>
-      <generate v-if="menu === 'gen'" />
-      <settings v-else-if="menu === 'settings'" />
-      <editor v-else-if="menu === 'edit'" />
-      <div v-else>
-        oops
+      <div class="inner">
+        <generate v-if="menu === 'gen'" />
+        <settings v-else-if="menu === 'settings'" />
+        <editor v-else-if="menu === 'edit'" />
+        <div v-else>
+          oops
+        </div>
       </div>
     </section>
   </template>
@@ -122,7 +124,7 @@ export default defineComponent({
 }
 
 header {
-  padding: 20px 30px 0 30px;
+  padding: 20px 20px 0 20px;
   background: #fff;
   border-bottom: 1px solid #ddd;
   font-size: 30px;
@@ -164,5 +166,15 @@ h2 {
       color: $main-color;
     }
   }
+}
+
+section {
+  height: calc(100% - 99px);
+  padding: 20px;
+}
+
+.inner {
+  width: 100%;
+  height: 100%;
 }
 </style>

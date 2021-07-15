@@ -1,5 +1,7 @@
 <template>
-  <h1>src/pages/settings.vue</h1>
+  <div class="settings">
+    Setting Page
+  </div>
 </template>
 
 <script lang="ts">
@@ -15,5 +17,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-
+.settings {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 4px;
+}
 </style>

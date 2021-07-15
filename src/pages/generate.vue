@@ -1,5 +1,7 @@
 <template>
-  <h1>src/pages/generate.vue</h1>
+  <div class="generate">
+    Generate Page
+  </div>
 </template>
 
 <script lang="ts">
@@ -15,5 +17,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-
+.generate {
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
 </style>
