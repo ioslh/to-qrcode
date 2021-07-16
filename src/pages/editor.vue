@@ -12,7 +12,7 @@
 <script lang="ts">
 import { defineComponent, inject, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue'
 import type Monaco from 'monaco-editor'
-import { monaco, monacoGetter } from '@/shared/monaco'
+import { monaco, monacoGetter, getRuntimeModel } from '@/shared/monaco'
 import { ruleContext } from '@/shared/rules'
 import { Rule } from '@/typings'
 
@@ -54,10 +54,6 @@ export default defineComponent({
     const code = ref(props.rule.func || '')
     const { update } = inject(ruleContext)!
 
-    watch(() => props.rule.func, f => {
-      code.value = f || ''
-    })
-
     const syncCode = () => {
       update({
         ...props.rule,
@@ -72,13 +68,22 @@ export default defineComponent({
       }, 1000)
     }
 
+    const cleanClear = () => {
+      if (editor) {
+        console.log('dispose')
+        editor.dispose()
+        editor = null
+      }
+    }
+
     const initEditor = async () => {
+      cleanClear()
       monacoLoading.value = true
       await monacoGetter()
       initMonaco()
       monacoLoading.value = false
       editor = monaco.editor.create(container.value!, {
-        value: code.value,
+        model: getRuntimeModel(props.rule.name, code.value),
         language: 'typescript',
         theme: 'vs-light',
         automaticLayout: true,
@@ -97,16 +102,14 @@ export default defineComponent({
       })
     }
 
-    onMounted(() => {
-      initEditor()
+    watch(() => props.rule.func, f => {
+      code.value = f || ''
     })
 
+    watch(() => props.rule.name, initEditor, { immediate: true })
+
     onBeforeUnmount(() => {
-      if (editor) {
-        console.log('dispose')
-        editor.dispose()
-        editor = null
-      }
+      cleanClear()
     })
 
     return {

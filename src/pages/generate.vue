@@ -1,18 +1,19 @@
 <template>
-  <div class="wrapper" >
-    <div class="generate" v-loading="parsing">
-      Generate Page
-    </div>
-  </div>
+  <div v-if="parsing" v-loading="true" class="loading"></div>
+  <error v-else-if="error" :desc="error" />
+  <div v-else>bazinga</div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType, ref, watch } from 'vue'
-import { ruleContext } from '@/shared/rules'
-import { monaco, monacoGetter, tsWorker, tsWorkerGetter, codeParser } from '@/shared/monaco'
+import { codeParser } from '@/shared/monaco'
 import { Rule } from '@/typings'
+import Error from '@/components/error.vue'
 
 export default defineComponent({
+  components: {
+    Error
+  },
   props: {
     rule: {
       type: Object as PropType<Rule>,
@@ -26,17 +27,23 @@ export default defineComponent({
     const error = ref('')
 
     const parseCode = async (code?: string) => {
+      console.log('------')
+      console.log(code)
       if (!code) {
         error.value = `Rule is not defined`
+        parsing.value = false
         return
       }
       error.value = ''
       parsing.value = true
       try {
-        await codeParser(code)
+        const { defined, js, params } = await codeParser(props.rule.name, code)
+        if (!defined || !js) {
+          error.value = 'Rule defininition is not complete'
+        }
       } catch(e) {
+        error.value = 'Oops, we have a problem'
         console.log(e)
-        // error.value = e.message
       }
       parsing.value = false
     }
@@ -44,6 +51,7 @@ export default defineComponent({
     watch(() => props.rule.func, parseCode, { immediate: true })
 
     return {
+      error,
       parsing
     }
   }
@@ -51,6 +59,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.loading {
+  height: 100%;
+  width: 100%;
+}
+
 .wrapper {
   padding: 20px;
 }

@@ -36,6 +36,7 @@ export interface Rule {
 
 export interface CodeParserResult {
   params: Param[]
+  defined: boolean
   js: string
 }
 

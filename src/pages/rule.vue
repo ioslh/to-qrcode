@@ -1,8 +1,7 @@
 <template>
-  <div class="empty" v-if="!currentRule">
-    <i class="iconfont iconempty"/>
+  <error v-if="!currentRule">
     <p>The rule "<strong>{{ name }}</strong>" is not existed</p>
-  </div>
+  </error>
   <template v-else>
     <header>
       <div class="intro">
@@ -37,6 +36,7 @@ import Settings from '@/pages/settings.vue'
 import Editor from '@/pages/editor.vue'
 import { getRules, ruleContext } from '@/shared/rules'
 import Readonly from '@/components/readonly.vue'
+import Error from '@/components/error.vue'
 
 interface MenuItem {
   name: string
@@ -49,6 +49,7 @@ export default defineComponent({
     Settings,
     Editor,
     Readonly,
+    Error,
   },
   props: {},
   emits: [],
@@ -111,24 +112,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "@/styles/var.scss";
-
-.empty {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  i {
-    font-size: 40px;
-    color: #ec9999;
-  }
-  p {
-    color: #aaa;
-    font-size: 14px;
-    margin-top: 20px;
-  }
-}
 
 header {
   padding: 20px 20px 0 20px;
