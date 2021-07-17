@@ -31,9 +31,7 @@ let monacoPromise: Promise<typeof Monaco>
 export const monacoGetter = () => {
   if (monaco) return Promise.resolve(monaco)
   if (monacoPromise) return monacoPromise
-  // const segment = p/rocess.env.NODE_ENV === 'development' ? 'dev' : 'min'
-  // TODO
-  const segment = 'dev'
+  const segment = 'min'
   monacoLoader.config({
     paths: {
       vs: `/monaco/${segment}/vs`
@@ -69,11 +67,11 @@ export const tsWorkerGetter = (monaco: typeof Monaco): Promise<void> => {
 let syntaxKind: typeof ts.SyntaxKind
 
 export const codeParser = async (name: string, code: string): Promise<CodeParserResult> => {
-  await race(monacoGetter(), 5, 'monacoGetter')
+  await monacoGetter()
   const runtimeModel = getRuntimeModel(name, code)
-  await race(tsWorkerGetter(monaco), 5, 'tsWorkerGetter')
+  await tsWorkerGetter(monaco)
   if (!syntaxKind) {
-    syntaxKind = await race(tsWorker.getSyntaxKind(), 2, 'getSyntaxKind')
+    syntaxKind = await tsWorker.getSyntaxKind()
   }
   const returnValue: CodeParserResult = {
     params: [],
@@ -91,7 +89,7 @@ export const codeParser = async (name: string, code: string): Promise<CodeParser
     return returnValue
   }
   returnValue.defined = true
-  const output = await race(tsWorker.getEmitOutput(runtimeModel.uri.toString()), 5, 'getEmitOutput')
+  const output = await race(tsWorker.getEmitOutput(runtimeModel.uri.toString()), 10, 'getEmitOutput')
   if (output && output.outputFiles && output.outputFiles.length) {
     returnValue.js = output.outputFiles[0].text
   }
