@@ -1,11 +1,42 @@
 import { createApp } from 'vue'
-import ElementPlus from 'element-plus'
-import 'element-plus/lib/theme-chalk/index.css'
+import {
+  ElSelect,
+  ElOption,
+  ElButton,
+  ElButtonGroup,
+  ElTooltip,
+  ElInput,
+  ElInputNumber,
+  ElDialog,
+
+  ElMessage,
+  ElLoading
+} from 'element-plus'
 import App from './app.vue'
 import routes from './routes'
+import 'element-plus/packages/theme-chalk/src/base.scss'
 import './styles/global.scss'
 
-createApp(App)
-  .use(routes)
-  .use(ElementPlus)
-  .mount('#app')
+const app = createApp(App)
+
+;[
+  ElSelect,
+  ElOption,
+  ElInputNumber,
+  ElButton,
+  ElButtonGroup,
+  ElTooltip,
+  ElInput,
+  ElDialog,
+].forEach(component => {
+  app.component(component.name, component)
+})
+
+;[
+  ElLoading,
+  ElMessage,
+].forEach(plugin => {
+  app.use(plugin)
+})
+
+app.use(routes).mount('#app')
