@@ -136,6 +136,7 @@ export default defineComponent({
           }
         }
       } catch(e) {
+        console.log(e)
         fatal.value = 'Oops, we have a problem'
       }
       parsing.value = false
