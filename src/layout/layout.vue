@@ -1,6 +1,9 @@
 <template>
   <nav>
-    <router-link class="logo" to="/">[to-qrcode]</router-link>
+    <router-link class="index" to="/">
+      <logo />
+      <span>to-qrcode</span>
+    </router-link>
     <div class="search">
       <input type="text" v-model="keyword" placeholder="Filter rules" />
       <router-link to="/new" class="create">New</router-link>
@@ -25,8 +28,12 @@ import { useRoute, useRouter } from 'vue-router'
 import builtinRules from '@/shared/builtin'
 import { getRules, saveRules, ruleContext } from '@/shared/rules'
 import { Rule } from '@/typings'
+import Logo from '@/components/logo.vue'
 
 export default defineComponent({
+  components: {
+    Logo
+  },
   setup() {
     const route = useRoute()
     const router = useRouter()
@@ -102,14 +109,27 @@ nav {
   flex-direction: column;
 }
 
-.logo {
-  display: block;
+.index {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   width: 100%;
   text-align: left;
   height: 60px;
   line-height: 60px;
   color: $main-color;
   text-decoration: none;
+  span {
+    margin-left: 16px;
+    color: #f3a39c;
+    transition: color .3s;
+    font-weight: bold;
+  }
+  &:hover {
+    span {
+      color: #ea4335;
+    }
+  }
 }
 
 .search {

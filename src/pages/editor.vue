@@ -7,10 +7,10 @@
         <button class="save" @click="save">保存</button>
         <div class="autosave">
           <input v-model="autoSave" id="autosave-checker" type="checkbox" >
-          <label for="autosave-checker">auto save</label>
+          <label for="autosave-checker">Auto save</label>
         </div>
       </div>
-      <a class="import">Import demo</a>
+      <a class="import" @click="onImport">Import a demo</a>
     </div>
   </div>
 </template>
@@ -20,6 +20,7 @@ import { defineComponent, inject, onBeforeUnmount, PropType, ref, watch } from '
 import type Monaco from 'monaco-editor'
 import { monaco, monacoGetter, getRuntimeModel } from '@/shared/monaco'
 import { ruleContext } from '@/shared/rules'
+import { demoRule } from '@/shared/builtin'
 import Storage from '@/shared/storage'
 import { Rule } from '@/typings'
 import { ElMessage } from 'element-plus'
@@ -137,6 +138,10 @@ export default defineComponent({
       ElMessage.success('Save successfully')
     }
 
+    const onImport = () => {
+      getRuntimeModel(props.rule.name).setValue(demoRule)
+    }
+
     watch(() => props.rule.func, f => {
       code.value = f || ''
     })
@@ -152,6 +157,7 @@ export default defineComponent({
       save,
       autoSave,
       monacoLoading,
+      onImport,
     }
   }
 })
