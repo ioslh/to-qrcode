@@ -6,8 +6,11 @@
       <router-link to="/new" class="create">New</router-link>
     </div>
     <ul class="list">
-      <li v-for="r in rules" :key="r.name">
-        <a :class="{active: activeRule === r.name}" @click="activeRule = r.name">{{ r.name }}</a>
+      <li v-for="r in displayRules" :key="r.name">
+        <a :class="{active: activeRule === r.name, builtin: r.builtin }" @click="activeRule = r.name">
+          <i v-if="r.builtin" class="iconfont el-icon-s-opportunity" />
+          {{ r.name }}
+        </a>
       </li>
     </ul>
   </nav>
@@ -35,6 +38,15 @@ export default defineComponent({
     })
     const keyword = ref('')
     const rules = ref<Rule[]>(getRules().filter(r => !r.builtin).concat(builtinRules))
+
+    const displayRules = computed(() => {
+      const k = keyword.value.trim().toLowerCase()
+      if (!k) return rules.value
+      return rules.value.filter(rule => {
+        if (rule.name.toLowerCase().includes(k)) return true
+        return false
+      })
+    })
 
     watch(rules, rs => {
       saveRules(rs.filter(r => !r.builtin))
@@ -71,6 +83,7 @@ export default defineComponent({
       activeRule,
       keyword,
       rules,
+      displayRules,
     }
   }
 })
@@ -85,17 +98,18 @@ nav {
   width: $nav-width;
   border-right: 1px solid #ddd;
   padding: 0 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .logo {
   display: block;
   width: 100%;
-  text-align: center;
-  height: 40px;
-  line-height: 40px;
+  text-align: left;
+  height: 60px;
+  line-height: 60px;
   color: $main-color;
   text-decoration: none;
-  margin-bottom: 20px; 
 }
 
 .search {
@@ -138,6 +152,10 @@ nav {
 .list {
   list-style: none;
   margin-top: 10px;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   li {
     margin: 4px 0;
   }
@@ -159,9 +177,14 @@ nav {
     &.active {
       background: $main-color;
       color: #fff;
+      i {
+        color: #daf5cd;
+      }
+    }
+    i {
+      color: #69af47;
     }
   }
-
 }
 
 main {
