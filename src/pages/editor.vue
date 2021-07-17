@@ -3,17 +3,20 @@
     <div class="container" ref="container" v-loading="monacoLoading">
     </div>
     <div class="control">
-      <button class="save" @click="save">保存</button>
-      <div class="autosave">
-        <input v-model="autoSave" id="autosave-checker" type="checkbox" >
-        <label for="autosave-checker">auto save</label>
+      <div class="save-control">
+        <button class="save" @click="save">保存</button>
+        <div class="autosave">
+          <input v-model="autoSave" id="autosave-checker" type="checkbox" >
+          <label for="autosave-checker">auto save</label>
+        </div>
       </div>
+      <a class="import">Import demo</a>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue'
+import { defineComponent, inject, onBeforeUnmount, PropType, ref, watch } from 'vue'
 import type Monaco from 'monaco-editor'
 import { monaco, monacoGetter, getRuntimeModel } from '@/shared/monaco'
 import { ruleContext } from '@/shared/rules'
@@ -101,8 +104,22 @@ export default defineComponent({
         fontSize: 14,
         lineHeight: 20,
         fixedOverflowWidgets: true,
+        minimap: {
+          enabled: false,
+        },
         scrollbar: {
           verticalScrollbarSize: 4
+        }
+      })
+      editor.addAction({
+        id: 'save-shortcut',
+        label: 'Save rule',
+        keybindings: [
+          monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S
+        ],
+        run: () => {
+          syncCode()
+          ElMessage.success('Save successfully')
         }
       })
       editor.onDidChangeModelContent(() => {
@@ -185,9 +202,16 @@ h4 {
   bottom: 20px;
   left: 20px;
   right: 20px;
-  padding: 12px;
+  padding: 16px;
   border: 1px solid #eee;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+}
+
+.save-control {
   display: flex;
   align-items: center;
 }
@@ -224,6 +248,15 @@ h4 {
     label {
       color: $main-color;
     }
+  }
+}
+
+.import {
+  color: #888;
+  cursor: pointer;
+  &:hover {
+    color: $main-color;
+    text-decoration: underline;
   }
 }
 </style>
