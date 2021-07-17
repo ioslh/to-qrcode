@@ -15,3 +15,11 @@ export const isUndef = (v: any): v is void => typeof v === 'undefined'
 export const NOOP = () => {}
 
 export const isThenable = <T = any>(v: any): v is Promise<T> => (typeof v === 'object') && ('then' in v) && isFunc(v.then)
+
+export const utoa = (data: string): string => {
+  return btoa(unescape(encodeURIComponent(data)))
+}
+
+export const atou = (base64: string): string => {
+  return decodeURIComponent(escape(atob(base64)))
+}

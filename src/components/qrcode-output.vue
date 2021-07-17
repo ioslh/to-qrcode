@@ -4,7 +4,7 @@
       <div class="container">
         <div v-if="qrcodeImage" @click="onShowBigger" class="img" :style="{backgroundImage: `url(${qrcodeImage})`}"></div>
         <div v-else-if="showLoading" v-loading="true" class="loading"></div>
-        <div v-else class="tip">输入参数生成二维码</div>
+        <div v-else class="tip">Awaiting input</div>
       </div>
     </div>
 

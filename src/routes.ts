@@ -19,7 +19,7 @@ export default createRouter({
           component: Create,
         },
         {
-          path: '/rules/:name',
+          path: '/rules/:name?',
           component: Rule,
         },
         {

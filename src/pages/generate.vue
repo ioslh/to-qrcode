@@ -44,7 +44,7 @@
             <tr>
               <td>&nbsp;</td>
               <td>
-                <el-button type="text" size="medium" @click="onReset">重置</el-button>
+                <el-button type="text" size="medium" @click="onReset">Reset</el-button>
               </td>
             </tr>
           </tbody>

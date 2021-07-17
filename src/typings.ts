@@ -24,7 +24,6 @@ export interface Param {
 export interface Rule {
   name: string
   desc?: string
-  params?: Param[]
   func?: string
   builtin?: boolean
 }

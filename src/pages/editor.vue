@@ -2,9 +2,9 @@
   <div class="editor">
     <div class="container" ref="container" v-loading="monacoLoading">
     </div>
-    <div class="control">
+    <div class="control" v-if="!rule.builtin">
       <div class="save-control">
-        <button class="save" @click="save">保存</button>
+        <button class="save" @click="save">Save</button>
         <div class="autosave">
           <input v-model="autoSave" id="autosave-checker" type="checkbox" >
           <label for="autosave-checker">Auto save</label>
@@ -102,6 +102,7 @@ export default defineComponent({
         language: 'typescript',
         theme: 'vs-light',
         automaticLayout: true,
+        readOnly: props.rule.builtin,
         fontSize: 14,
         lineHeight: 20,
         fixedOverflowWidgets: true,

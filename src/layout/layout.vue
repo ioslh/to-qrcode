@@ -146,7 +146,7 @@ nav {
     transition: border-color .3s;
     border-radius: 4px;
     text-indent: 1em;
-    width: calc(100% - 60px);
+    width: calc(100% - 50px);
     &:hover {
       border-color: #888;
     }
@@ -173,6 +173,7 @@ nav {
   list-style: none;
   margin-top: 10px;
   overflow: auto;
+  height: calc(100% - 100px);
   &::-webkit-scrollbar {
     display: none;
   }
