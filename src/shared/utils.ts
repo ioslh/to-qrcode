@@ -7,3 +7,11 @@ export const race = <T>(p: Promise<T>, seconds: number, id?: string): Promise<T>
     setTimeout(() => reject(`Promise ${id || '' } timeout after ${seconds}s`), seconds * 1000)
   })])
 }
+
+export const isFunc = (v: any): v is Function => typeof v === 'function'
+
+export const isUndef = (v: any): v is void => typeof v === 'undefined'
+
+export const NOOP = () => {}
+
+export const isThenable = <T = any>(v: any): v is Promise<T> => (typeof v === 'object') && ('then' in v) && isFunc(v.then)

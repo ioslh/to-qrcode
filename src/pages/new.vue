@@ -46,7 +46,7 @@ export default defineComponent({
       try {
         await validateName()
         add({ name: name.value })
-        router.push(`/rules/${name.value}`)
+        router.push(`/rules/${name.value}/edit`)
       } catch (e) {
         error.value = e.message
       }

@@ -1,10 +1,7 @@
+export type Primitive = string | number | boolean | symbol | void | bigint
 export interface UnionOption {
   label: string
   value: any
-}
-
-export interface EditingUnionOption extends UnionOption {
-  _id: string
 }
 
 export enum ParamType {
@@ -14,15 +11,13 @@ export enum ParamType {
   UNION = 'union',
 }
 
-
 export interface Param {
   prop: string
   type: ParamType
   label?: string
   desc?: string
-  // used when type is union
-  options?: UnionOption[]
-  defaultValue?: any
+  options?: Primitive[]
+  defaultValue?: Primitive
   required?: boolean
 }
 
@@ -41,3 +36,5 @@ export interface CodeParserResult {
 }
 
 export type ReturnPromisify<F extends ((...args: any) => any)> = F extends (...args: infer P) => infer R ? (...args: P) => Promise<R> : never;
+
+export type RuleImplement = (i: Record<string, any>) => string | Promise<string>

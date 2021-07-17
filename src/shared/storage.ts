@@ -1,4 +1,4 @@
-const isUndef = (v: any): v is undefined => typeof v === 'undefined'
+import { isUndef } from '@/shared/utils'
 
 export default {
   set(key: string, value: any) {

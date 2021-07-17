@@ -18,8 +18,8 @@
       </div>
     </header>
     <section>
-      <settings v-if="menu === 'settings'" :rule="currentRule" />
-      <template v-else-if="menu === 'edit'">
+      <!-- <settings v-if="menu === 'settings'" :rule="currentRule" /> -->
+      <template v-if="menu === 'edit'">
         <editor v-if="!currentRule.builtin" :rule="currentRule" />
         <readonly v-else :rule="currentRule" />  
       </template>
@@ -88,10 +88,10 @@ export default defineComponent({
           name: 'Edit Rule',
           key: 'edit',
         },
-        {
-          name: 'Settings',
-          key: 'settings',
-        },
+        // {
+        //   name: 'Settings',
+        //   key: 'settings',
+        // },
       ]
     })
     

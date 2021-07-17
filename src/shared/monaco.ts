@@ -1,7 +1,7 @@
 import monacoLoader from '@monaco-editor/loader'
 import type Monaco from 'monaco-editor'
 import type ts from 'typescript'
-import { ParamType } from '@/typings'
+import { ParamType, Primitive } from '@/typings'
 import type { ReturnPromisify, CodeParserResult, Param } from '@/typings'
 import { race } from '@/shared/utils'
 
@@ -170,7 +170,7 @@ const findTypeWithName = (typeName: string, allNodes: ts.Node[], container: { va
   })
 }
 
-const normalizeValue = (v: any, type: ts.SyntaxKind) => {
+const normalizeValue = (v: any, type: ts.SyntaxKind): Primitive => {
   switch(type) {
     case syntaxKind.StringKeyword:
     case syntaxKind.StringLiteral:
@@ -239,7 +239,7 @@ const receiveMembers = (members: ts.TypeElement[], container: { value: Param[] }
                 if (name === 'default') {
                   let defaultValue = normalizeValue(tag.comment, anyMember.type.kind)
                   if (field.type === ParamType.UNION) {
-                    defaultValue = normalizeStringLiteral(defaultValue)
+                    defaultValue = normalizeStringLiteral(defaultValue as string)
                     if ((field.options || []).includes(defaultValue)) {
                       field.defaultValue = defaultValue
                     }

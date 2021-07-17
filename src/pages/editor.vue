@@ -3,8 +3,11 @@
     <div class="container" ref="container" v-loading="monacoLoading">
     </div>
     <div class="control">
-      <button>保存</button>
-      <input type="checkbox" >
+      <button class="save" @click="save">保存</button>
+      <div class="autosave">
+        <input v-model="autoSave" id="autosave-checker" type="checkbox" >
+        <label for="autosave-checker">auto save</label>
+      </div>
     </div>
   </div>
 </template>
@@ -14,8 +17,11 @@ import { defineComponent, inject, onBeforeUnmount, onMounted, PropType, ref, wat
 import type Monaco from 'monaco-editor'
 import { monaco, monacoGetter, getRuntimeModel } from '@/shared/monaco'
 import { ruleContext } from '@/shared/rules'
+import Storage from '@/shared/storage'
 import { Rule } from '@/typings'
+import { ElMessage } from 'element-plus'
 
+const autoSaveStorageKey = '__editor_autosave__'
 let editor: Monaco.editor.IStandaloneCodeEditor | null = null
 let inited = false
 const initMonaco = () => {
@@ -52,7 +58,12 @@ export default defineComponent({
     const monacoLoading = ref(true)
     const container = ref()
     const code = ref(props.rule.func || '')
+    const autoSave = ref(Storage.get(autoSaveStorageKey, true))
     const { update } = inject(ruleContext)!
+
+    watch(autoSave, val => {
+      Storage.set(autoSaveStorageKey, val)
+    })
 
     const syncCode = () => {
       update({
@@ -97,9 +108,16 @@ export default defineComponent({
       editor.onDidChangeModelContent(() => {
         if (editor) {
           code.value = editor.getValue()
-          graceSyncCode()
+          if (autoSave.value) {
+            graceSyncCode()
+          }
         }
       })
+    }
+
+    const save = () => {
+      syncCode()
+      ElMessage.success('Save successfully')
     }
 
     watch(() => props.rule.func, f => {
@@ -114,6 +132,8 @@ export default defineComponent({
 
     return {
       container,
+      save,
+      autoSave,
       monacoLoading,
     }
   }
@@ -121,6 +141,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/styles/var.scss";
+
 .editor {
   width: 100%;
   height: 100%;
@@ -166,5 +188,42 @@ h4 {
   padding: 12px;
   border: 1px solid #eee;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.save {
+  outline: none;
+  border: 1px solid $main-color;
+  border-radius: 4px;
+  font-size: 12px;
+  color: $main-color;
+  background: #fff;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all .3s;
+  &:hover {
+    background: $main-color;
+    color: #fff;
+  }
+}
+
+.autosave {
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  label {
+    margin-left: 4px;
+    color: #888;
+    transition: color .3s;
+    cursor: pointer;
+    user-select: none;
+  }
+  &:hover {
+    label {
+      color: $main-color;
+    }
+  }
 }
 </style>

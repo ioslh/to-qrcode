@@ -1,5 +1,6 @@
 import type { InjectionKey, Ref } from 'vue'
-import { Rule } from '@/typings'
+import { Rule, Param, ParamType, Primitive, UnionOption } from '@/typings'
+import { isUndef } from '@/shared/utils'
 import Storage from './storage'
 
 const RULE_KEY = '__rules__'
@@ -21,4 +22,33 @@ interface RuleContext {
   remove: (r: Rule) => void
 }
 
+export const normalizeInitValue = (ps: Param[]): Record<string, any> => {
+  return ps.reduce((obj, param) => {
+    obj[param.prop] = param.defaultValue
+    return obj
+  }, {} as Record<string, any>)
+}
+
 export const ruleContext: InjectionKey<RuleContext> = Symbol('rules')
+
+
+export const ensureValueType = (value: any, expectType: ParamType) => {
+  if (isUndef(value)) return undefined
+  switch(expectType) {
+    case ParamType.BOOLEAN:
+      return !!value
+    case ParamType.NUMBER:
+      return Number(value)
+    case ParamType.STRING:
+      return String(value)
+    default:
+      return value
+  }
+}
+
+export const normalizeUnionOptions = (options: Primitive[]): UnionOption[] => {
+  return options.filter(v => !isUndef(v)).map(v => ({
+    value: v,
+    label: String(v),
+  }))
+}

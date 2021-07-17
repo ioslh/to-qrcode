@@ -8,10 +8,12 @@
   "dependencies": {
     "@monaco-editor/loader": "^1.1.1",
     "element-plus": "^1.0.2-beta.55",
+    "qrcode": "^1.4.4",
     "vue": "^3.0.5",
     "vue-router": "4"
   },
   "devDependencies": {
+    "@types/qrcode": "^1.4.1",
     "@vitejs/plugin-vue": "^1.2.5",
     "@vue/compiler-sfc": "^3.0.5",
     "monaco-editor": "^0.25.2",
