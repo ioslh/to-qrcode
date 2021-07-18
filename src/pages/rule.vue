@@ -41,12 +41,14 @@ export default defineComponent({
           const r = JSON.parse(atou(rawInUrl.value))
           if (typeof r === 'object' && typeof r.func === 'string') {
             return {
-              name: r.name ? `Shared - ${r.name}` : 'Untitled rule',
+              name: r.name || 'Untitled rule',
               func: r.func,
               raw: true,
             } as Rule
           }
-        } catch {}
+        } catch(e) {
+          console.log(e)
+        }
       }
       return undefined
     })

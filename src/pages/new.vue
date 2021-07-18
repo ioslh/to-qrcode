@@ -15,10 +15,7 @@
 <script lang="ts">
 import { defineComponent, inject, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ruleContext } from '@/shared/rules'
-import builtinRules from '@/shared/builtin'
-
-const NAME_PATTERN = /^[-_a-zA-Z0-9]+$/
+import { ruleContext, validateName } from '@/shared/rules'
 
 export default defineComponent({
   props: {},
@@ -29,23 +26,9 @@ export default defineComponent({
     const name = ref('')
     const error = ref('')
     const { rules, add } = inject(ruleContext)!
-    const validateName = () => {
-      if (!name.value) {
-        throw new Error('name cannot be empty')
-      }
-      if (!NAME_PATTERN.test(name.value)) {
-        throw new Error(`name '${name.value}' is not match the pattern '${NAME_PATTERN}'`)
-      }
-      if (builtinRules.find(rule => rule.name === name.value)) {
-        throw new Error(`name '${name.value}' is already used as builtin rule`)
-      }
-      if (rules.value.find(rule => rule.name === name.value)) {
-        throw new Error(`name '${name.value}' is already used`)
-      }
-    }
     const submit = async () => {
       try {
-        await validateName()
+        await validateName(name.value, rules.value)
         add({ name: name.value })
         router.push(`/rules/${name.value}/edit`)
       } catch (e) {

@@ -1,24 +1,13 @@
 <template>
   <header>
-    <div class="intro">
-      <div class="left">
-        <input class="name" type="text" v-model="name" />
-        <input :disabled="rule.builtin || rule.raw" v-model="desc" class="tip" type="text" :placeholder="rule.raw ? '' : '// Add some descriptions for this rule'" />
+    <div class="head">
+      <div class="info">
+        <span class="raw" v-if="rule.raw">Shared</span>
+        <h2>{{ rule.name }}</h2>
+        <div>{{ rule.desc }}</div>
       </div>
-      <div class="actions" v-if="!rule.raw">
-        <el-popconfirm
-          v-if="!rule.builtin"
-          title="Are you sure to delete?"
-          confirmButtonText="Yes"
-          cancelButtonText="Cancel"
-          @confirm="onRemove"
-        >
-          <template #reference>
-            <i class="iconfont icondelete" />
-          </template>
-        </el-popconfirm>
-        <i class="iconfont iconshare" @click="onShare" />
-      </div>
+      <a class="action" v-if="rule.raw" @click="onSaveAs">Save locally</a>
+      <a v-else class="action" @click="onShare">Open share link</a>
     </div>
     <div class="menu">
       <a
@@ -30,8 +19,8 @@
     </div>
   </header>
   <section>
-    <!-- <settings v-if="menu === 'settings'" :rule="currentRule" /> -->
-    <editor v-if="runtimeMenu === 'edit'" :rule="rule" />
+    <settings v-if="runtimeMenu === 'settings'" :rule="rule" />
+    <editor v-else-if="runtimeMenu === 'edit'" :rule="rule" />
     <generate v-else :rule="rule" />
   </section>
 </template>
@@ -69,7 +58,7 @@ export default defineComponent({
   },
   emits: [],
   setup(props, { emit }){
-    const { update, remove, rules, rename } = inject(ruleContext)!
+    const { update, remove, rules, add } = inject(ruleContext)!
     const route = useRoute()
     const router = useRouter()
     const desc = computed({
@@ -112,24 +101,23 @@ export default defineComponent({
     onMounted(() => {
       menus.value = [
         {
-          name: 'Generate QRCode',
+          name: 'Generate',
           key: 'gen',
         },
         {
-          name: 'Edit Rule',
+          name: 'Rule',
           key: 'edit',
         },
-        // {
-        //   name: 'Settings',
-        //   key: 'settings',
-        // },
+        {
+          name: 'Settings',
+          key: 'settings',
+        },
       ]
     })
 
     const onShare = () => {
       const raw = utoa(JSON.stringify(props.rule))
       const link = `${location.origin}/rules?raw=${raw}`
-      console.log(link)
       window.open(link, '_blank')
     }
 
@@ -137,12 +125,24 @@ export default defineComponent({
       remove(props.rule)
       router.push(`/rules/${rules.value[0].name}/gen`)
     }
+
+    const onSaveAs = () => {
+      const newName = `${props.rule.name}(from-shared)`
+      const rule = {
+        ...props.rule,
+        name: newName,
+        raw: false,
+      }
+      add(rule)
+      router.push(`/rules/${newName}/gen`)
+    }
  
     return {
       name,
       desc,
       menus,
       onShare,
+      onSaveAs,
       onRemove,
       runtimeMenu,
     }
@@ -160,57 +160,55 @@ header {
   font-size: 30px;
 }
 
-.intro {
+.head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
 }
 
-.left {
+.info {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   flex: 1;
-}
-
-.name {
-  outline: none;
-  border: none;
-  font-size: 20px;
-  color: #333;
-}
-
-.tip {
-  font-size: 12px;
-  color: #999;
-  outline: none;
-  border: none;
-  width: 100%;
-  margin-left: 20px;
-  &::placeholder {
+  width: calc(100% - 140px);
+  overflow: hidden;
+  span {
+    font-size: 10px;
+    border: 1px solid #fabc05;
+    color: #fff;
+    background: #fabc05;
+    padding: 4px;
+    border-radius: 2px;
+    margin-right: 4px;
+  }
+  h2 {
+    flex-shrink: 0;
+    font-size: 26px;
+  }
+  div {
     color: #ccc;
-  }
-  &:disabled {
-    background: transparent;
-  }
-}
-
-.actions {
-  font-size: 18px;
-  i {
-    color: #999;
-    margin-right: 6px;
-    cursor: pointer;
-    &:hover {
-      color: $main-color;
+    font-size: 12px;
+    margin-left: 20px;
+    overflow: scroll;
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 }
 
-h2 {
+.action {
+  font-size: 12px;
+  color: $main-color;
+  cursor: pointer;
+  width: 120px;
   flex-shrink: 0;
-  font-size: 26px;
+  text-align: right;
+  &:hover {
+    color: $main-color;
+    text-decoration: underline;
+  }
 }
 
 .menu {

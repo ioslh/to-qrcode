@@ -87,7 +87,7 @@ export default defineComponent({
 
     const renameRule = (oldName: string, newName: string) => {
       const index = rules.value.findIndex(r => r.name === oldName)
-      if (index !== -1) {
+      if (index !== -1 && !rules.value[index].builtin) {
         const rule = {
           ...rules.value[index],
           name: newName

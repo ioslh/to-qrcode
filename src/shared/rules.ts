@@ -1,6 +1,7 @@
 import type { InjectionKey, Ref } from 'vue'
 import { Rule, Param, ParamType, Primitive, UnionOption } from '@/typings'
 import { isUndef } from '@/shared/utils'
+import builtinRules from '@/shared/builtin'
 import Storage from './storage'
 
 const RULE_KEY = '__rules__'
@@ -52,4 +53,23 @@ export const normalizeUnionOptions = (options: Primitive[]): UnionOption[] => {
     value: v,
     label: String(v),
   }))
+}
+
+
+export const NAME_PATTERN = /^[-_a-zA-Z0-9]+$/
+
+
+export const validateName = (name: string, existingRules: Rule[]) => {
+  if (!name) {
+    throw new Error('name cannot be empty')
+  }
+  if (!NAME_PATTERN.test(name)) {
+    throw new Error(`name '${name}' is not match the pattern '${NAME_PATTERN}'`)
+  }
+  if (builtinRules.find(rule => rule.name === name)) {
+    throw new Error(`name '${name}' is already used as builtin rule`)
+  }
+  if (existingRules.find(rule => rule.name === name)) {
+    throw new Error(`name '${name}' is already used`)
+  }
 }
