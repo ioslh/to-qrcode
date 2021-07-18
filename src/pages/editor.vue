@@ -2,7 +2,7 @@
   <div class="editor">
     <div class="container" ref="container" v-loading="monacoLoading">
     </div>
-    <div class="control" v-if="readOnly">
+    <div class="control" v-if="!readOnly">
       <div class="save-control">
         <button class="save" @click="save">Save</button>
         <div class="autosave">
