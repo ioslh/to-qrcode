@@ -126,11 +126,11 @@ export default defineComponent({
     }
 
     const onSaveAs = () => {
-      let newName = `${props.rule.name}(from-shared)`
+      let newName = `${props.rule.name}-from-shared`
       try {
         validateName(newName, rules.value)
       } catch(e) {
-        newName += `(${idGenerator()})`
+        newName += `-${idGenerator()}`
       }
       const rule = {
         ...props.rule,

@@ -204,6 +204,10 @@ nav {
     transition: all .3s;
     background: transparent;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
     &:hover {
       background: #eee;
     }
