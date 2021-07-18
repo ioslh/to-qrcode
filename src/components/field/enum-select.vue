@@ -27,15 +27,12 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { Param, UnionOption } from '@/typings'
-import { normalizeUnionOptions } from '@/shared/rules'
-
-type ValueType = string | number
+import { Param, Primitive } from '@/typings'
 
 export default defineComponent({
   props: {
     modelValue: {
-      type: [String, Number] as PropType<ValueType>
+      type: [String, Number] as PropType<Primitive>
     },
     param: {
       type: Object as PropType<Param>,
@@ -44,9 +41,9 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
-    const options = computed(() => normalizeUnionOptions(props.param.options || []))
+    const options = computed(() => props.param.options || [])
     const dropdownMode = computed(() => options.value.length > 3)
-    const onChange = (nextValue: ValueType) => {
+    const onChange = (nextValue: Primitive) => {
       emit('update:modelValue', nextValue)
     }
 

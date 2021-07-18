@@ -198,7 +198,7 @@ const normalizeStringLiteral = (v: string): any => {
 }
 
 
-const whiteListJsDocTags = ['label', 'desc', 'default']
+const whiteListJsDocTags = ['label', 'desc', 'default', 'labels']
 const receiveMembers = (members: ts.TypeElement[], container: { value: Param[] }) => {
   members.forEach(member => {
     if (member.kind !== syntaxKind.PropertySignature) return
@@ -226,7 +226,11 @@ const receiveMembers = (members: ts.TypeElement[], container: { value: Param[] }
             field.options = []
             anyMember.type.types.map((t: any) => {
               if (t.kind === syntaxKind.LiteralType) {
-                field.options!.push(normalizeValue(t.literal.text, t.literal.kind))
+                const v = normalizeValue(t.literal.text, t.literal.kind)
+                field.options!.push({
+                  label: String(v),
+                  value: v,
+                })
               }
             })
           }
@@ -240,11 +244,21 @@ const receiveMembers = (members: ts.TypeElement[], container: { value: Param[] }
             if (tag.kind === syntaxKind.JSDocTag) {
               const name = tag.tagName.escapedText
               if (whiteListJsDocTags.includes(name)) {
-                if (name === 'default') {
+                if (name === 'labels') {
+                  if (field.type === ParamType.UNION) {
+                    const labels = tag.comment.split(',')
+                    ;(field.options || []).forEach((opt, index) => {
+                      const optLabel = (labels[index] || '').trim()
+                      if (optLabel) {
+                        opt.label = optLabel
+                      }
+                    })
+                  }
+                } else if (name === 'default') {
                   let defaultValue = normalizeValue(tag.comment, anyMember.type.kind)
                   if (field.type === ParamType.UNION) {
                     defaultValue = normalizeStringLiteral(defaultValue as string)
-                    if ((field.options || []).includes(defaultValue)) {
+                    if ((field.options || []).map(i => i.value).includes(defaultValue)) {
                       field.defaultValue = defaultValue
                     }
                   } else {

@@ -1,7 +1,7 @@
-export type Primitive = string | number | boolean | symbol | void | bigint
+export type Primitive = string | number | boolean | symbol | void
 export interface UnionOption {
   label: string
-  value: any
+  value: Primitive
 }
 
 export enum ParamType {
@@ -16,7 +16,7 @@ export interface Param {
   type: ParamType
   label?: string
   desc?: string
-  options?: Primitive[]
+  options?: UnionOption[]
   defaultValue?: Primitive
   required?: boolean
 }
