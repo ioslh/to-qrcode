@@ -146,6 +146,7 @@ export default defineComponent({
     }
 
     const parseCode = async (code?: string) => {
+      output.value = ''
       error.value = ''
       fatal.value = ''
       if (!code) {
