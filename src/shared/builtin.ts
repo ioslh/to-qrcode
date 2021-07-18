@@ -65,13 +65,14 @@ export default [
   },
   {
     name: 'lark-miniapp',
-    desc: '打开一个飞书小程序或者小程序中的一个页面',
+    desc: '打开一个飞书小程序或者小程序中的一个页面，参考 https://open.feishu.cn/document/uYjL24iN/ucjN1UjL3YTN14yN2UTN#2f51bbd',
     func: `interface Params {
       /** @label appid */
       /** @desc 小程序 appid  */
       appId: string
       /** @label 启动模式 */
       /** @desc 小程序启动模式 */
+      /** @labels 聊天侧边栏,工作台,独立大窗口,独立小窗口  */
       mode: 'sidebar-semi' | 'appCenter' | 'window' | 'window-semi'
       /** @label 	页面 */
       /** @desc 需要跳转的页面路径，如 pages/index */

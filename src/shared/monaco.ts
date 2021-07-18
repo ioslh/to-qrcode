@@ -245,7 +245,7 @@ const receiveMembers = (members: ts.TypeElement[], container: { value: Param[] }
               const name = tag.tagName.escapedText
               if (whiteListJsDocTags.includes(name)) {
                 if (name === 'labels') {
-                  if (field.type === ParamType.UNION) {
+                  if (field.type === ParamType.UNION && tag.comment) {
                     const labels = tag.comment.split(',')
                     ;(field.options || []).forEach((opt, index) => {
                       const optLabel = (labels[index] || '').trim()
