@@ -2,7 +2,7 @@
   <div class="editor">
     <div class="container" ref="container" v-loading="monacoLoading">
     </div>
-    <div class="control" v-if="!rule.builtin">
+    <div class="control" v-if="readOnly">
       <div class="save-control">
         <button class="save" @click="save">Save</button>
         <div class="autosave">
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, onBeforeUnmount, PropType, ref, watch } from 'vue'
+import { computed, defineComponent, inject, onBeforeUnmount, PropType, ref, watch } from 'vue'
 import type Monaco from 'monaco-editor'
 import { monaco, monacoGetter, getRuntimeModel } from '@/shared/monaco'
 import { ruleContext } from '@/shared/rules'
@@ -91,6 +91,10 @@ export default defineComponent({
       }
     }
 
+    const readOnly = computed(() => {
+      return props.rule.builtin || props.rule.raw
+    })
+
     const initEditor = async () => {
       cleanClear()
       monacoLoading.value = true
@@ -102,7 +106,7 @@ export default defineComponent({
         language: 'typescript',
         theme: 'vs-light',
         automaticLayout: true,
-        readOnly: props.rule.builtin,
+        readOnly: readOnly.value,
         fontSize: 14,
         lineHeight: 20,
         fixedOverflowWidgets: true,
@@ -156,6 +160,7 @@ export default defineComponent({
     return {
       container,
       save,
+      readOnly,
       autoSave,
       monacoLoading,
       onImport,

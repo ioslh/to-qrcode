@@ -26,6 +26,7 @@ export interface Rule {
   desc?: string
   func?: string
   builtin?: boolean
+  raw?: boolean
 }
 
 export interface CodeParserResult {

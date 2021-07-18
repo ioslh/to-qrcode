@@ -20,6 +20,7 @@ interface RuleContext {
   add: (r: Rule) => void
   update: (r: Rule) => void
   remove: (r: Rule) => void
+  rename: (oldName: string, newName: string) => void
 }
 
 export const normalizeInitValue = (ps: Param[]): Record<string, any> => {

@@ -85,7 +85,18 @@ export default defineComponent({
       }
     }
 
-    provide(ruleContext, { rules, add: addRule, update: updateRule, remove: removeRule })
+    const renameRule = (oldName: string, newName: string) => {
+      const index = rules.value.findIndex(r => r.name === oldName)
+      if (index !== -1) {
+        const rule = {
+          ...rules.value[index],
+          name: newName
+        }
+        rules.value[index] = rule
+      }
+    }
+
+    provide(ruleContext, { rules, add: addRule, update: updateRule, remove: removeRule, rename: renameRule })
     return {
       activeRule,
       keyword,
@@ -174,6 +185,7 @@ nav {
   margin-top: 10px;
   overflow: auto;
   height: calc(100% - 100px);
+  padding-bottom: 40px;
   &::-webkit-scrollbar {
     display: none;
   }

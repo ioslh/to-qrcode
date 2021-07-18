@@ -1,23 +1,37 @@
 <template>
   <header>
     <div class="intro">
-      <h2>{{ rule.name }}</h2>
-      <div class="desc">
-        <input :disabled="rule.builtin" v-model="desc" class="tip" type="text" placeholder="// Add some descriptions for this rule" />
+      <div class="left">
+        <input class="name" type="text" v-model="name" />
+        <input :disabled="rule.builtin || rule.raw" v-model="desc" class="tip" type="text" :placeholder="rule.raw ? '' : '// Add some descriptions for this rule'" />
+      </div>
+      <div class="actions" v-if="!rule.raw">
+        <el-popconfirm
+          v-if="!rule.builtin"
+          title="Are you sure to delete?"
+          confirmButtonText="Yes"
+          cancelButtonText="Cancel"
+          @confirm="onRemove"
+        >
+          <template #reference>
+            <i class="iconfont icondelete" />
+          </template>
+        </el-popconfirm>
+        <i class="iconfont iconshare" @click="onShare" />
       </div>
     </div>
     <div class="menu">
       <a
         v-for="m in menus"
         :key="m.key"
-        :class="{active: m.key === menu}"
-        @click="redirectMenu(m.key)"
+        :class="{active: m.key === runtimeMenu}"
+        @click="runtimeMenu = m.key"
       >{{ m.name }}</a>
     </div>
   </header>
   <section>
     <!-- <settings v-if="menu === 'settings'" :rule="currentRule" /> -->
-    <editor v-if="menu === 'edit'" :rule="rule" />
+    <editor v-if="runtimeMenu === 'edit'" :rule="rule" />
     <generate v-else :rule="rule" />
   </section>
 </template>
@@ -32,6 +46,7 @@ import { ruleContext } from '@/shared/rules'
 import Readonly from '@/components/readonly.vue'
 import Error from '@/components/error.vue'
 import type { Rule } from '@/typings'
+import { utoa } from '@/shared/utils'
 
 interface MenuItem {
   name: string
@@ -54,7 +69,7 @@ export default defineComponent({
   },
   emits: [],
   setup(props, { emit }){
-    const { update } = inject(ruleContext)!
+    const { update, remove, rules, rename } = inject(ruleContext)!
     const route = useRoute()
     const router = useRouter()
     const desc = computed({
@@ -68,8 +83,31 @@ export default defineComponent({
       }
     })
 
+    const name = computed({
+      get: () => props.rule.name,
+      set: (v) => {
+        //
+      }
+    })
+
     const menus = ref<MenuItem[]>([])
-    const menu = computed(() => route.params.menu as string || 'gen')
+    const menu = ref('gen')
+    const runtimeMenu = computed({
+      get: () => {
+        if (props.rule.raw) {
+          return menu.value
+        } else {
+          return route.params.menu as string || 'gen'
+        }
+      },
+      set: (v) => {
+        if (props.rule.raw) {
+          menu.value = v
+        } else {
+          router.push(`/rules/${props.rule.name}/${v}`)
+        }
+      }
+    })
 
     onMounted(() => {
       menus.value = [
@@ -87,17 +125,26 @@ export default defineComponent({
         // },
       ]
     })
-    
-    const redirectMenu = (key: string) => {
-      router.push(`/rules/${props.rule.name}/${key}`)
+
+    const onShare = () => {
+      const raw = utoa(JSON.stringify(props.rule))
+      const link = `${location.origin}/rules?raw=${raw}`
+      console.log(link)
+      window.open(link, '_blank')
+    }
+
+    const onRemove = () => {
+      remove(props.rule)
+      router.push(`/rules/${rules.value[0].name}/gen`)
     }
  
     return {
       name,
-      menu,
-      menus,
       desc,
-      redirectMenu,
+      menus,
+      onShare,
+      onRemove,
+      runtimeMenu,
     }
   }
 })
@@ -116,21 +163,22 @@ header {
 .intro {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   width: 100%;
 }
 
-h2 {
-  flex-shrink: 0;
-  font-size: 26px;
+.left {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
 }
 
-.desc {
-  font-size: 14px;
-  margin-left: 20px;
-  color: #aaa;
-  overflow: hidden;
-  flex: 1;
+.name {
+  outline: none;
+  border: none;
+  font-size: 20px;
+  color: #333;
 }
 
 .tip {
@@ -139,12 +187,30 @@ h2 {
   outline: none;
   border: none;
   width: 100%;
+  margin-left: 20px;
   &::placeholder {
     color: #ccc;
   }
   &:disabled {
     background: transparent;
   }
+}
+
+.actions {
+  font-size: 18px;
+  i {
+    color: #999;
+    margin-right: 6px;
+    cursor: pointer;
+    &:hover {
+      color: $main-color;
+    }
+  }
+}
+
+h2 {
+  flex-shrink: 0;
+  font-size: 26px;
 }
 
 .menu {

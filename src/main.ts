@@ -8,6 +8,7 @@ import {
   ElInput,
   ElInputNumber,
   ElDialog,
+  ElPopconfirm,
 
   ElMessage,
   ElLoading
@@ -28,6 +29,7 @@ const app = createApp(App)
   ElTooltip,
   ElInput,
   ElDialog,
+  ElPopconfirm,
 ].forEach(component => {
   app.component(component.name, component)
 })

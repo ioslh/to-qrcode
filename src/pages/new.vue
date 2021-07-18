@@ -3,17 +3,17 @@
     <div class="panel">
       <h3>Create new rule</h3>
       <div class="form">
-        <input @keyup="onTyping" type="text" v-model="name" placeholder="Type a name" @keyup.enter="submit">
+        <input ref="input" @keyup="onTyping" type="text" v-model="name" placeholder="Type a name" @keyup.enter="submit">
         <button @click="submit">Go</button>
       </div>
       <div class="error">{{ error }}</div>
-      <div class="tip">Type an unique name for your new rule</div>
+      <div class="tip">Type a unique name for your new rule</div>
     </div>
   </section>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, ref } from 'vue'
+import { defineComponent, inject, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ruleContext } from '@/shared/rules'
 import builtinRules from '@/shared/builtin'
@@ -24,6 +24,7 @@ export default defineComponent({
   props: {},
   emits: [],
   setup(props, { emit }){
+    const input = ref()
     const router = useRouter()
     const name = ref('')
     const error = ref('')
@@ -55,9 +56,16 @@ export default defineComponent({
     const onTyping = () => {
       error.value = ''
     }
+
+    onMounted(() => {
+      if (input.value) {
+        input.value.focus()
+      }
+    })
   
     return {
       name,
+      input,
       error,
       submit,
       onTyping,
