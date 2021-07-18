@@ -2,7 +2,7 @@
   <div class="qrcode" >
     <div class="wrapper">
       <div class="container">
-        <div v-if="qrcodeImage" @click="onShowBigger" class="img" :style="{backgroundImage: `url(${qrcodeImage})`}"></div>
+        <div v-if="qrcodeImage" @click="onShowBigger" class="img" :class="{ dirty: dirty }" :style="{backgroundImage: `url(${qrcodeImage})`}"></div>
         <div v-else-if="showLoading" v-loading="true" class="loading"></div>
         <div v-else class="tip">Awaiting input</div>
       </div>
@@ -29,7 +29,8 @@ export default defineComponent({
     },
     input: {
       type: String
-    }
+    },
+    dirty: Boolean,
   },
   setup(props) {
     const qrcodeImage = ref('')
@@ -103,6 +104,9 @@ export default defineComponent({
   background: center/cover no-repeat #fafafa;
   position: relative;
   cursor: pointer;
+  &.dirty {
+    opacity: .4;
+  }
 }
 
 .loading {

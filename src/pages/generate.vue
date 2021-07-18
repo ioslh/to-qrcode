@@ -80,7 +80,7 @@
         </table>
       </div>
       <div class="output">
-        <qrcode-output :input="output" :generating="generating" />
+        <qrcode-output :input="output" :generating="generating" :dirty="outputDirty" />
       </div>
     </div>
   </div>
@@ -125,6 +125,7 @@ export default defineComponent({
     const output = ref('')
     const ruleImplement = ref<RuleImplement>()
     const heuristicAsync = ref(false)
+    const outputDirty = ref(false)
 
     const resolveImplement = () => {
       const returnIdentifier = `fn_${idGenerator()}`
@@ -178,6 +179,7 @@ export default defineComponent({
     const onReset = () => {
       input.value = normalizeInitValue(params.value)
       output.value = ''
+      outputDirty.value = false
     }
 
     const missRequiredFields = () => {
@@ -197,6 +199,7 @@ export default defineComponent({
 
     const performGenerate = async () => {
       if (!ruleImplement.value) return
+      outputDirty.value = true
       let missField
       if (missField = missRequiredFields()) {
         // do not warning for now
@@ -210,8 +213,10 @@ export default defineComponent({
         if (isThenable<string>(tryOutput)) {
           heuristicAsync.value = true
           output.value = await tryOutput
+          outputDirty.value = false
         } else if (typeof tryOutput === 'string') {
           output.value = tryOutput
+          outputDirty.value = false
         } else {
 
         }
@@ -249,6 +254,7 @@ export default defineComponent({
       generating,
       useTextarea,
       onReset,
+      outputDirty,
     }
   }
 })
