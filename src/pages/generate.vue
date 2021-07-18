@@ -1,6 +1,24 @@
 <template>
   <div v-if="parsing" v-loading="true" class="loading"></div>
-  <error v-else-if="fatal" :desc="fatal" />
+  <div v-else-if="fatal" class="fatal">
+    <i class="iconfont iconerror" />
+    <p>{{ fatal }}</p>
+    <p>
+      Try
+      <router-link v-if="!rule.builtin && !rule.raw" :to="`/rules/${rule.name}/edit`">update</router-link>
+      your rule now
+    </p>
+  </div>
+  <div v-else-if="error" class="wrapper">
+    <div class="error">
+      <p class="message">{{ error }}</p>
+      <p class="guide">
+        Try
+        <router-link v-if="!rule.builtin && !rule.raw" :to="`/rules/${rule.name}/edit`">update</router-link>
+        your rule now
+      </p>
+    </div>
+  </div>
   <div v-else class="wrapper">
     <div class="rule">
       <div class="input">
@@ -86,8 +104,10 @@ export default defineComponent({
     const parsing = ref(true)
     const params = ref<Param[]>([])
     const jsCode = ref('')
-    // fatal error, will display message fullscreen
+    // fatal message, system error, will display message fullscreen
     const fatal = ref('')
+    // normally user-input caused error
+    const error = ref('')
     const generating = ref(false)
     const genTimer = ref()
     const input = ref<Record<string, any>>({})
@@ -115,29 +135,30 @@ export default defineComponent({
     }
 
     const parseCode = async (code?: string) => {
+      error.value = ''
+      fatal.value = ''
       if (!code) {
-        fatal.value = `Rule is not defined`
+        error.value = `Rule function is not defined`
         parsing.value = false
         return
       }
-      fatal.value = ''
       parsing.value = true
       try {
         const { defined, js, params: ps } = await codeParser(props.rule.name, code)
         if (!defined || !js || !ps.length) {
-          fatal.value = 'Rule defininition is not complete'
+          error.value = 'Rule defininition is not complete'
         } else {
           params.value = ps
           jsCode.value = js
           input.value = normalizeInitValue(ps)
           ruleImplement.value = resolveImplement()
           if (!ruleImplement.value) {
-            fatal.value = 'Error happened while resolving rule function'
+            error.value = 'Error happened while resolving rule function'
           }
         }
       } catch(e) {
         console.log(e)
-        fatal.value = 'Oops, we have a problem'
+        fatal.value = 'Oops, we have a problem, try refresh page'
       }
       parsing.value = false
     }
@@ -207,6 +228,7 @@ export default defineComponent({
 
     return {
       fatal,
+      error,
       parsing,
       params,
       input,
@@ -220,6 +242,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/styles/var.scss";
+
 .loading {
   height: 100%;
   width: 100%;
@@ -228,6 +252,40 @@ export default defineComponent({
 .wrapper {
   padding: 20px;
   height: 100%;
+}
+
+.fatal {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  i {
+    font-size: 60px;
+    color: $danger-color;
+    margin-bottom: 40px;
+  }
+  p {
+    margin-top: 6px;
+  }
+}
+
+.error {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  background: #fff;
+  .message {
+    color: $danger-color;
+  }
+  .guide {
+    margin-top: 20px;
+    a {
+      color: $main-color;
+      font-weight: bold;
+    }
+  }
 }
 
 .rule {

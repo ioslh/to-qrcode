@@ -20,3 +20,11 @@
 .el-loading-mask {
   background-color: transparent;
 }
+
+a {
+  color: $main-color;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}

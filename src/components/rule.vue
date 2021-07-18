@@ -1,5 +1,11 @@
 <template>
   <header>
+    <div v-if="rule.raw && showShareTip" class="shared-tip">
+      <p>
+        This rule is temporary and shared by url, try <a @click="onSaveAs">save it locally</a> on your computer for later use.
+      </p>
+      <a class="close-tip" @click="onHideShareTip">Don't show again</a>
+    </div>
     <div class="head">
       <div class="info">
         <span class="tag raw" v-if="rule.raw">Shared</span>
@@ -27,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, inject, PropType } from 'vue'
+import { computed, defineComponent, ref, inject, PropType, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Generate from '@/pages/generate.vue'
 import Settings from '@/pages/settings.vue'
@@ -37,11 +43,14 @@ import Readonly from '@/components/readonly.vue'
 import Error from '@/components/error.vue'
 import type { Rule } from '@/typings'
 import { utoa, idGenerator } from '@/shared/utils'
+import Storage from '@/shared/storage'
 
 interface MenuItem {
   name: string
   key: string
 }
+
+const ShareStorageKey = '__show_share_tip__'
 
 export default defineComponent({
   components: {
@@ -59,6 +68,7 @@ export default defineComponent({
   },
   emits: [],
   setup(props, { emit }){
+    const showShareTip = ref(Storage.get(ShareStorageKey, true))
     const { update, remove, rules, add } = inject(ruleContext)!
     const route = useRoute()
     const router = useRouter()
@@ -130,6 +140,14 @@ export default defineComponent({
       add(rule)
       router.push(`/rules/${newName}/gen`)
     }
+
+    const onHideShareTip = () => {
+      showShareTip.value = false
+    }
+
+    watch(showShareTip, v => {
+      Storage.set(ShareStorageKey, v)
+    })
  
     return {
       menus,
@@ -137,6 +155,8 @@ export default defineComponent({
       onSaveAs,
       onRemove,
       runtimeMenu,
+      showShareTip,
+      onHideShareTip,
     }
   }
 })
@@ -150,6 +170,28 @@ header {
   background: #fff;
   border-bottom: 1px solid #ddd;
   font-size: 30px;
+  position: relative;
+}
+
+.shared-tip {
+  position: absolute;
+  top: 0;
+  width: 80%;
+  left: 10%;
+  font-size: 12px;
+  background: #ffe1de;
+  padding: 4px 10px;
+  border: 1px solid #f3a39c;
+  border-top: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.close-tip {
+  width: 140px;
+  text-align: right;
+  flex-shrink: 0;
 }
 
 .head {
