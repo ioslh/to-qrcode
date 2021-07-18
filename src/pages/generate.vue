@@ -227,15 +227,22 @@ export default defineComponent({
 
 .wrapper {
   padding: 20px;
+  height: 100%;
 }
 
 .rule {
   display: flex;
   align-items: flex-start;
+  height: 100%;
 }
 
 .input {
   width: 70%;
+  height: 100%;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   table {
     width: 100%;
     border-collapse: collapse;
@@ -247,7 +254,7 @@ export default defineComponent({
     vertical-align: top;
   }
   th, td {
-    padding: 10px 6px;
+    padding: 10px 10px;
   }
 
   .prop-info {

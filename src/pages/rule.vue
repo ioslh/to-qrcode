@@ -48,6 +48,7 @@ export default defineComponent({
           if (typeof r === 'object' && typeof r.func === 'string') {
             return {
               name: r.name || 'Untitled rule',
+              desc: r.desc ? String(r.desc) : '',
               func: r.func,
               raw: true,
             } as Rule

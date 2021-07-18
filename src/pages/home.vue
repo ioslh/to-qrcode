@@ -67,7 +67,7 @@ export default defineComponent({
 }
 
 h3 {
-  margin-top: 60px;
+  margin-top: 20px;
   padding-bottom: 6px;
   font-size: 26px;
   color: #4284f3;
@@ -79,7 +79,7 @@ h3 {
 }
 
 ul {
-  margin-top: 100px;
+  margin-top: 20px;
   li {
     margin: 10px 0;
     list-style: none;
@@ -100,7 +100,7 @@ ul {
 }
 
 h4 {
-  margin-top: 100px;
+  margin-top: 60px;
   font-size: 22px;
 }
 

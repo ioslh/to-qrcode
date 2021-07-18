@@ -58,7 +58,6 @@ export default defineComponent({
     const desc = ref(props.rule.desc || '')
 
     const changeName = () => {
-      console.log('----change')
       const n = name.value.trim()
       if (n === props.rule.name) return
       try {
@@ -146,6 +145,7 @@ main {
   textarea {
     width: 80%;
     padding: 1em;
+    height: 160px;
   }
 }
 
