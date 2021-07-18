@@ -14,6 +14,9 @@
           <div class="raw">{{ rawInUrl }}</div>
         </div>
       </error>
+      <div class="enter">
+        Select a rule or&nbsp;<router-link to="/new">create one</router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -118,5 +121,13 @@ export default defineComponent({
   background: #fafafa;
   border: 1px solid #eee;
   border-radius: 4px;
+}
+
+.enter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 16px;
 }
 </style>

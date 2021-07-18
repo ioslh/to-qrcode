@@ -149,7 +149,7 @@ export default defineComponent({
       error.value = ''
       fatal.value = ''
       if (!code) {
-        error.value = `Rule function is not defined`
+        error.value = `Rule function is totally empty.`
         parsing.value = false
         return
       }
@@ -169,7 +169,7 @@ export default defineComponent({
         }
       } catch(e) {
         console.log(e)
-        fatal.value = 'Oops, we have a problem here, try refresh the page'
+        fatal.value = 'Oops, we have a fatal problem here, try refresh the page'
       }
       parsing.value = false
     }
