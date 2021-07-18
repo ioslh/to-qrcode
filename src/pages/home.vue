@@ -11,11 +11,11 @@
       <h4>One simple step to create your qrcode rule</h4>
       <div class="steps">
         <div class="step iface">
-          <img src="//to-qrcode.oss-cn-beijing.aliyuncs.com/iface.png" alt="">
+          <img src="https://to-qrcode.oss-cn-beijing.aliyuncs.com/iface.png" alt="">
           <p>Define an interface along with a function, we'll do everything else for you.</p>
         </div>
         <div class="step form">
-          <img src="//to-qrcode.oss-cn-beijing.aliyuncs.com/form.png" alt="">
+          <img src="https://to-qrcode.oss-cn-beijing.aliyuncs.com/form.png" alt="">
           <p>Including auto convert your interface to a smart form, run you function, and obviously, generate qrocde according to your function output</p>
         </div>
       </div>

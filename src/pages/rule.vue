@@ -38,7 +38,13 @@ export default defineComponent({
       }
       if (rawInUrl.value) {
         try {
-          const r = JSON.parse(atou(rawInUrl.value))
+          /**
+           * vue-router will replace + with space(' '),
+           * we have to replace it back
+           * https://github.com/vuejs/vue-router-next/blob/master/src/query.ts#L56
+           */
+          const rawCode = rawInUrl.value.replace(/ /g, '+')
+          const r = JSON.parse(atou(rawCode))
           if (typeof r === 'object' && typeof r.func === 'string') {
             return {
               name: r.name || 'Untitled rule',

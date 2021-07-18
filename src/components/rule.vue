@@ -2,7 +2,8 @@
   <header>
     <div class="head">
       <div class="info">
-        <span class="raw" v-if="rule.raw">Shared</span>
+        <span class="tag raw" v-if="rule.raw">Shared</span>
+        <span class="tag builtin" v-else-if="rule.builtin">Builtin</span>
         <h2>{{ rule.name }}</h2>
         <div>{{ rule.desc }}</div>
       </div>
@@ -26,16 +27,16 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, inject, PropType } from 'vue'
+import { computed, defineComponent, ref, inject, PropType } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Generate from '@/pages/generate.vue'
 import Settings from '@/pages/settings.vue'
 import Editor from '@/pages/editor.vue'
-import { ruleContext } from '@/shared/rules'
+import { ruleContext, validateName } from '@/shared/rules'
 import Readonly from '@/components/readonly.vue'
 import Error from '@/components/error.vue'
 import type { Rule } from '@/typings'
-import { utoa } from '@/shared/utils'
+import { utoa, idGenerator } from '@/shared/utils'
 
 interface MenuItem {
   name: string
@@ -61,45 +62,8 @@ export default defineComponent({
     const { update, remove, rules, add } = inject(ruleContext)!
     const route = useRoute()
     const router = useRouter()
-    const desc = computed({
-      get: () => props.rule.desc || '',
-      set: v => {
-        const nextRule = {
-          ...props.rule,
-          desc: v,
-        }
-        update(nextRule)
-      }
-    })
-
-    const name = computed({
-      get: () => props.rule.name,
-      set: (v) => {
-        //
-      }
-    })
-
-    const menus = ref<MenuItem[]>([])
-    const menu = ref('gen')
-    const runtimeMenu = computed({
-      get: () => {
-        if (props.rule.raw) {
-          return menu.value
-        } else {
-          return route.params.menu as string || 'gen'
-        }
-      },
-      set: (v) => {
-        if (props.rule.raw) {
-          menu.value = v
-        } else {
-          router.push(`/rules/${props.rule.name}/${v}`)
-        }
-      }
-    })
-
-    onMounted(() => {
-      menus.value = [
+    const menus = computed(() => {
+      const ms = [
         {
           name: 'Generate',
           key: 'gen',
@@ -108,11 +72,36 @@ export default defineComponent({
           name: 'Rule',
           key: 'edit',
         },
-        {
-          name: 'Settings',
-          key: 'settings',
-        },
       ]
+      if (props.rule.raw || props.rule.builtin) {
+        return ms
+      }
+      return ms.concat([{
+        name: 'Settings',
+        key: 'settings',
+      }])
+    })
+
+    const menu = ref('gen')
+    const runtimeMenu = computed({
+      get: () => {
+        const returnMenu = props.rule.raw ? menu.value : (route.params.menu as string || 'gen')
+        if (menus.value.map(v => v.key).includes(returnMenu)) {
+          return returnMenu
+        }
+        return menus.value[0].key
+      },
+      set: (v) => {
+        let nextMenu = v
+        if (!menus.value.map(v => v.key).includes(v)) {
+          nextMenu = menus.value[0].key
+        }
+        if (props.rule.raw) {
+          menu.value = nextMenu
+        } else {
+          router.push(`/rules/${props.rule.name}/${nextMenu}`)
+        }
+      }
     })
 
     const onShare = () => {
@@ -127,7 +116,12 @@ export default defineComponent({
     }
 
     const onSaveAs = () => {
-      const newName = `${props.rule.name}(from-shared)`
+      let newName = `${props.rule.name}(from-shared)`
+      try {
+        validateName(newName, rules.value)
+      } catch(e) {
+        newName += `(${idGenerator()})`
+      }
       const rule = {
         ...props.rule,
         name: newName,
@@ -138,8 +132,6 @@ export default defineComponent({
     }
  
     return {
-      name,
-      desc,
       menus,
       onShare,
       onSaveAs,
@@ -176,12 +168,14 @@ header {
   overflow: hidden;
   span {
     font-size: 10px;
-    border: 1px solid #fabc05;
     color: #fff;
     background: #fabc05;
     padding: 4px;
-    border-radius: 2px;
-    margin-right: 4px;
+    border-radius: 4px;
+    margin-right: 6px;
+    &.builtin {
+      background: #69af47;
+    }
   }
   h2 {
     flex-shrink: 0;
