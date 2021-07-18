@@ -34,7 +34,7 @@ export const monacoGetter = () => {
   const segment = 'min'
   monacoLoader.config({
     paths: {
-      vs: `/monaco/${segment}/vs`
+      vs: `//to-qrcode.oss-cn-beijing.aliyuncs.com/monaco/${segment}/vs`
     }
   })
   return monacoPromise = monacoLoader.init().then((result) => {
