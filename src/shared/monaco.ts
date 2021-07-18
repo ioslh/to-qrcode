@@ -28,6 +28,12 @@ interface HackedTsWorker extends Monaco.languages.typescript.TypeScriptWorker {
 export let monaco: typeof Monaco
 let monacoPromise: Promise<typeof Monaco>
 
+;(window as any).MonacoEnvironment = {
+  getWorkerUrl: function(workerId: any, label: any) {
+    return '/monaco-editor-worker-loader-proxy.js'
+  }
+}
+
 export const monacoGetter = () => {
   if (monaco) return Promise.resolve(monaco)
   if (monacoPromise) return monacoPromise
