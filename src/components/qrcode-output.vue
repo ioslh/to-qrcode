@@ -2,7 +2,9 @@
   <div class="qrcode" >
     <div class="wrapper">
       <div class="container">
-        <div v-if="qrcodeImage" @click="onShowBigger" class="img" :class="{ dirty: dirty }" :style="{backgroundImage: `url(${qrcodeImage})`}"></div>
+        <div v-if="qrcodeImage" @click="onShowBigger" class="img" :class="{ dirty: dirty }">
+          <img :src="qrcodeImage" />
+        </div>
         <div v-else-if="showLoading" v-loading="true" class="loading"></div>
         <div v-else class="tip">Awaiting input</div>
       </div>
@@ -45,6 +47,7 @@ export default defineComponent({
       try {
         qrcodeImage.value = await QRCode.toDataURL(text)
       } catch(e) {
+        // console.log(e)
         qrcodeImage.value = ''
       }
       parsing.value = false
@@ -98,12 +101,17 @@ export default defineComponent({
 }
 
 .img {
-  border: 1px dashed #ccc;
-  width: 100%;
-  padding-top: 100%;
-  background: center/cover no-repeat #fafafa;
+  background: center/auto no-repeat #fff;
   position: relative;
   cursor: pointer;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  img {
+    max-width: 100%;
+  }
   &.dirty {
     opacity: .4;
   }
