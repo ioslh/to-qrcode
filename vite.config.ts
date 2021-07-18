@@ -27,8 +27,4 @@ export default defineConfig({
       '@': '/src'
     }
   },
-  server: {
-    https: true,
-    port: 443,
-  }
 })

@@ -28,19 +28,23 @@ interface HackedTsWorker extends Monaco.languages.typescript.TypeScriptWorker {
 export let monaco: typeof Monaco
 let monacoPromise: Promise<typeof Monaco>
 
-;(window as any).MonacoEnvironment = {
-  getWorkerUrl: function(workerId: any, label: any) {
-    return '/monaco-editor-worker-loader-proxy.js'
+if (process.env.NODE_ENV === 'production') {
+  ;(window as any).MonacoEnvironment = {
+    getWorkerUrl: function(workerId: any, label: any) {
+      return '/monaco-editor-worker-loader-proxy.js'
+    }
   }
 }
 
 export const monacoGetter = () => {
   if (monaco) return Promise.resolve(monaco)
   if (monacoPromise) return monacoPromise
-  const segment = 'min'
+  const vspath = process.env.NODE_ENV === 'production'
+    ? '//to-qrcode.oss-cn-beijing.aliyuncs.com/monaco/min/vs'
+    : '/monaco-editor/min/vs'
   monacoLoader.config({
     paths: {
-      vs: `//to-qrcode.oss-cn-beijing.aliyuncs.com/monaco/${segment}/vs`
+      vs: vspath
     }
   })
   return monacoPromise = monacoLoader.init().then((result) => {
