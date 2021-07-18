@@ -26,9 +26,5 @@ export default defineConfig({
     alias: {
       '@': '/src'
     }
-  },
-  server: {
-    port: 443,
-    https: true
   }
 })

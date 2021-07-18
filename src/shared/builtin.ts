@@ -49,14 +49,52 @@ export default [
   defineRule((i: Input) => {
       return i.text
   })`,
-    params: [],
     builtin: true,
   },
   {
-    name: 'contact',
-    desc: 'Convert contact vcard to qrcode',
-    func: '',
-    params: [],
-    builtin: true,
+    name: 'eleme',
+    desc: 'Eleme app scheme',
+    func: `interface Input {
+      url: string
+  }
+  
+  defineRule((i: Input) => {
+      return \`eleme://web?url=\${encodeURIComponent(i.url)}\`
+  })`,
+  builtin: true,
+  },
+  {
+    name: 'lark-miniapp',
+    desc: '打开一个飞书小程序或者小程序中的一个页面',
+    func: `interface Params {
+      /** @label appid */
+      /** @desc 小程序 appid  */
+      appId: string
+      /** @label 启动模式 */
+      /** @desc 小程序启动模式 */
+      mode: 'sidebar-semi' | 'appCenter' | 'window' | 'window-semi'
+      /** @label 	页面 */
+      /** @desc 需要跳转的页面路径，如 pages/index */
+      path?: string
+      /** @label 页面参数  */
+      /** @desc 路径后的参数，如 a=b */
+      pathQuery?: string
+  }
+  
+  defineRule((p: Params) => {
+      let path = ''
+      if (p.path) {
+          path = p.path
+          if (p.pathQuery) {
+              path += \`?\${p.pathQuery}\`
+          }
+      }
+      if (path) {
+          path = \`&path=\${encodeURIComponent(path)}\`
+      }
+  
+      return \`https://applink.feishu.cn/client/mini_program/open?appId=\${p.appId}&mode=\${encodeURIComponent(p.mode)}\${path}\`
+  })`,
+    builtin: true
   },
 ] as Rule[]
