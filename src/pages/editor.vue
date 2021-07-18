@@ -10,7 +10,9 @@
           <label for="autosave-checker">Auto save</label>
         </div>
       </div>
-      <a class="import" @click="onImport">Import a demo</a>
+      <div>
+        Don't know how to write a rule? <a class="import" @click="onImport">Import a demo</a> and see what's happening
+      </div>
     </div>
   </div>
 </template>
@@ -263,12 +265,4 @@ h4 {
   }
 }
 
-.import {
-  color: #888;
-  cursor: pointer;
-  &:hover {
-    color: $main-color;
-    text-decoration: underline;
-  }
-}
 </style>

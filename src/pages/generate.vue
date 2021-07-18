@@ -62,7 +62,10 @@
             <tr>
               <td>&nbsp;</td>
               <td>
-                <el-button type="text" size="medium" @click="onReset">Reset</el-button>
+                <div class="form-ctrl">
+                  <el-button type="text" size="medium" @click="onReset">Reset</el-button>
+                  <div class="copyright">Form rendering is powered by <a href="https://element-plus.gitee.io/" target="_blank">element-plus</a></div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -165,6 +168,7 @@ export default defineComponent({
 
     const onReset = () => {
       input.value = normalizeInitValue(params.value)
+      output.value = ''
     }
 
     const missRequiredFields = () => {
@@ -339,6 +343,17 @@ export default defineComponent({
     font-family: monaco;
     margin-left: 4px;
   }
+}
+
+.form-ctrl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.copyright {
+  font-size: 10px;
+  color: #bbb;
 }
 
 .output {
