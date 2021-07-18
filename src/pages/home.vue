@@ -100,7 +100,7 @@ ul {
 }
 
 h4 {
-  margin-top: 60px;
+  margin-top: 40px;
   font-size: 22px;
 }
 
@@ -109,7 +109,7 @@ h4 {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .step {
