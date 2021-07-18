@@ -4,19 +4,27 @@
     <i class="iconfont iconerror" />
     <p>{{ fatal }}</p>
     <p>
-      Try
-      <router-link v-if="!rule.builtin && !rule.raw" :to="`/rules/${rule.name}/edit`">update</router-link>
-      your rule now
+      Sorry for the fatal error, try submit your rule function 
+      <a href="https://github.com/ioslh/to-qrcode/issues/new">here</a>
+      , let's see what's wrong on earth.
     </p>
   </div>
   <div v-else-if="error" class="wrapper">
     <div class="error">
       <p class="message">{{ error }}</p>
-      <p class="guide">
-        Try
-        <router-link v-if="!rule.builtin && !rule.raw" :to="`/rules/${rule.name}/edit`">update</router-link>
-        your rule now
-      </p>
+      <ul class="guide" >
+        <li v-if="!rule.builtin && !rule.raw">
+          Try
+          <router-link :to="`/rules/${rule.name}/edit`">add or update</router-link>
+          your rule function and paramter interface.
+        </li>
+        <li>Check if the rule function and parameter interface are both defined.</li>
+        <li>Check if the rule function contains <code>defineRule</code> call.</li>
+        <li>Try 'Import a demo' in editor to see how to write a rule.</li>
+        <li>
+          Feel free to submit your rule function <a target="_blank" href="https://github.com/ioslh/to-qrcode/issues/new">here</a>, let's see what's wrong on earth.
+        </li>
+      </ul>
     </div>
   </div>
   <div v-else class="wrapper">
@@ -156,12 +164,12 @@ export default defineComponent({
           input.value = normalizeInitValue(ps)
           ruleImplement.value = resolveImplement()
           if (!ruleImplement.value) {
-            error.value = 'Error happened while resolving rule function'
+            error.value = 'Error happened while parsing rule function'
           }
         }
       } catch(e) {
         console.log(e)
-        fatal.value = 'Oops, we have a problem, try refresh page'
+        fatal.value = 'Oops, we have a problem here, try refresh the page'
       }
       parsing.value = false
     }
@@ -285,9 +293,9 @@ export default defineComponent({
   }
   .guide {
     margin-top: 20px;
-    a {
-      color: $main-color;
-      font-weight: bold;
+    li {
+      margin: 6px 0;
+      list-style: inside;
     }
   }
 }
