@@ -108,6 +108,9 @@ export default defineComponent({
         model: getRuntimeModel(props.rule.name, code.value),
         language: 'typescript',
         theme: 'vs-light',
+        fontFamily: '"JetBrains Mono-Regular",Menlo,Monaco,Consolas,monospace',
+        fontLigatures: true,
+        // formatOnType: true,
         automaticLayout: true,
         readOnly: readOnly.value,
         fontSize: 14,
@@ -193,6 +196,7 @@ export default defineComponent({
 .container {
   width: 100%;
   height: 100%;
+  font-family: "JetBrains Mono-Regular",Menlo,Monaco,Consolas,monospace;
 }
 
 h4 {

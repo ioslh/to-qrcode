@@ -231,7 +231,7 @@ header {
     font-size: 26px;
   }
   div {
-    height: 32px;
+    max-height: 32px;
     font-size: 12px;
     margin-left: 20px;
     overflow: scroll;

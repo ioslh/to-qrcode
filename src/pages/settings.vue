@@ -8,7 +8,7 @@
           <p>Change to rename</p>
         </div>
         <div class="desc field">
-          <textarea v-model="desc" @blur="changeDesc" placeholder="Markdown supported!"></textarea>
+          <textarea v-model="desc" @blur="changeDesc" placeholder="Add description here, markdown supported!"></textarea>
           <p>Add or update description for this rule(Markdown supported)</p>
         </div>
       </main>

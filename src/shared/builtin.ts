@@ -41,61 +41,61 @@ export default [
     name: 'text',
     desc: 'Any text to qrcode',
     func: `interface Input {
-      /** @label Text */
-      /** @desc Convert any text to a qrcode */
-      text: string
-  }
+  /** @label Text */
+  /** @desc Convert any text to a qrcode */
+  text: string
+}
   
-  defineRule((i: Input) => {
-      return i.text
-  })`,
+defineRule((i: Input) => {
+  return i.text
+})`,
     builtin: true,
   },
   {
     name: 'eleme',
     desc: 'Eleme app scheme',
     func: `interface Input {
-      url: string
-  }
+  url: string
+}
   
-  defineRule((i: Input) => {
-      return \`eleme://web?url=\${encodeURIComponent(i.url)}\`
-  })`,
+defineRule((i: Input) => {
+  return \`eleme://web?url=\${encodeURIComponent(i.url)}\`
+})`,
   builtin: true,
   },
   {
     name: 'lark-miniapp',
-    desc: '打开一个飞书小程序或者小程序中的一个页面，参考 https://open.feishu.cn/document/uYjL24iN/ucjN1UjL3YTN14yN2UTN#2f51bbd',
+    desc: '打开一个飞书小程序或者小程序中的一个页面，参考[小程序文档](https://open.feishu.cn/document/uYjL24iN/ucjN1UjL3YTN14yN2UTN#2f51bbd)',
     func: `interface Params {
-      /** @label appid */
-      /** @desc 小程序 appid  */
-      appId: string
-      /** @label 启动模式 */
-      /** @desc 小程序启动模式 */
-      /** @labels 聊天侧边栏,工作台,独立大窗口,独立小窗口  */
-      mode: 'sidebar-semi' | 'appCenter' | 'window' | 'window-semi'
-      /** @label 	页面 */
-      /** @desc 需要跳转的页面路径，如 pages/index */
-      path?: string
-      /** @label 页面参数  */
-      /** @desc 路径后的参数，如 a=b */
-      pathQuery?: string
+  /** @label appid */
+  /** @desc 小程序 appid  */
+  appId: string
+  /** @label 启动模式 */
+  /** @desc 小程序启动模式 */
+  /** @labels 聊天侧边栏,工作台,独立大窗口,独立小窗口  */
+  mode: 'sidebar-semi' | 'appCenter' | 'window' | 'window-semi'
+  /** @label 	页面 */
+  /** @desc 需要跳转的页面路径，如 pages/index */
+  path?: string
+  /** @label 页面参数  */
+  /** @desc 路径后的参数，如 a=b */
+  pathQuery?: string
+}
+  
+defineRule((p: Params) => {
+  let path = ''
+  if (p.path) {
+    path = p.path
+    if (p.pathQuery) {
+      path += \`?\${p.pathQuery}\`
+    }
+  }
+  if (path) {
+    path = \`&path=\${encodeURIComponent(path)}\`
   }
   
-  defineRule((p: Params) => {
-      let path = ''
-      if (p.path) {
-          path = p.path
-          if (p.pathQuery) {
-              path += \`?\${p.pathQuery}\`
-          }
-      }
-      if (path) {
-          path = \`&path=\${encodeURIComponent(path)}\`
-      }
-  
-      return \`https://applink.feishu.cn/client/mini_program/open?appId=\${p.appId}&mode=\${encodeURIComponent(p.mode)}\${path}\`
-  })`,
+  return \`https://applink.feishu.cn/client/mini_program/open?appId=\${p.appId}&mode=\${encodeURIComponent(p.mode)}\${path}\`
+})`,
     builtin: true
   },
 ] as Rule[]
