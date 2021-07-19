@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Layout from '@/layout/layout.vue'
-import Create from '@/pages/new.vue'
-import Rule from '@/pages/rule.vue'
-import Home from '@/pages/home.vue'
+import Layout from '@/components/layout.vue'
+import Create from '@/pages/rules/new.vue'
+import Rule from '@/pages/rules/rule.vue'
+import Home from '@/pages/home/home.vue'
+// import Setting from '@/pages/settings/settings.vue'
 
 export default createRouter({
   routes: [
@@ -14,6 +15,10 @@ export default createRouter({
           path: '/',
           component: Home,
         },
+        // {
+        //   path: '/settings',
+        //   component: Setting,
+        // },
         {
           path: '/new',
           component: Create,
