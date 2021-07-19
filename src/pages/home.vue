@@ -20,13 +20,13 @@
         </div>
       </div>
       <ul>
-        <li>All data stored on your computer, safe and fast.</li>
         <li>
-          <div>
+          <div class="ts">
             <img src="/ts.svg" alt="TypeScript">
             <span> is our good friend. Interface, function, everything you already familier with.</span>
           </div>
         </li>
+        <li>All data stored on your computer, safe and fast.</li>
         <li>Easy to share by url.</li>
         <li>Start by <router-link to="/new">create</router-link> your first rule right now.</li>
       </ul>
@@ -83,10 +83,13 @@ ul {
   li {
     margin: 10px 0;
     list-style: none;
-    div {
+    .ts {
       display: flex;
-      align-items: center;
+      align-items: baseline;
+      position: relative;
       img {
+        position: relative;
+        top: 1px;
         width: 18px;
         margin-right: 4px;
       }

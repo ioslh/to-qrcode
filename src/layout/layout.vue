@@ -16,6 +16,11 @@
         </a>
       </li>
     </ul>
+    <div class="copyright">
+      <a target="_blank" href="https://github.com/ioslh/to-qrcode">
+        open source
+      </a>
+    </div>
   </nav>
   <main>
     <router-view></router-view>
@@ -118,6 +123,7 @@ nav {
   padding: 0 20px;
   display: flex;
   flex-direction: column;
+  // position: relative;
 }
 
 .index {
@@ -149,6 +155,7 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 36px;
   input {
     height: 36px;
     border: 2px solid #eee;
@@ -184,8 +191,7 @@ nav {
   list-style: none;
   margin-top: 10px;
   overflow: auto;
-  height: calc(100% - 100px);
-  padding-bottom: 40px;
+  height: calc(100% - 136px);
   &::-webkit-scrollbar {
     display: none;
   }
@@ -221,6 +227,22 @@ nav {
     i {
       color: #69af47;
     }
+  }
+}
+
+.copyright {
+  background: #fff;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-top: 1px solid #eee;
+  a {
+    color: #999;
+    font-size: 12px;
+    text-decoration: none;
+    background: url('/github.svg') left center/contain no-repeat;
+    padding-left: 26px;
   }
 }
 

@@ -346,7 +346,7 @@ export default defineComponent({
         color: red;
         position: absolute;
         left: -8px;
-        top: 2px;
+        top: 0px;
         font-weight: 900;
       }
     }

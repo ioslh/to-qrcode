@@ -8,6 +8,7 @@
         <div class="autosave">
           <input v-model="autoSave" id="autosave-checker" type="checkbox" >
           <label for="autosave-checker">Auto save</label>
+          <a class="format" @click="formatCode">Format code</a>
         </div>
       </div>
       <div>
@@ -140,6 +141,12 @@ export default defineComponent({
       })
     }
 
+    const formatCode = () => {
+      if (editor) {
+        editor.getAction('editor.action.formatDocument')?.run()
+      }
+    }
+
     const save = () => {
       syncCode()
       ElMessage.success('Save successfully')
@@ -166,6 +173,7 @@ export default defineComponent({
       autoSave,
       monacoLoading,
       onImport,
+      formatCode,
     }
   }
 })
@@ -262,6 +270,9 @@ h4 {
     label {
       color: $main-color;
     }
+  }
+  .format {
+    margin-left: 20px;;
   }
 }
 
