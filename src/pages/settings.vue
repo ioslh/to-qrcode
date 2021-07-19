@@ -8,8 +8,8 @@
           <p>Change to rename</p>
         </div>
         <div class="desc field">
-          <textarea v-model="desc" @blur="changeDesc"></textarea>
-          <p>Add or update description for this rule</p>
+          <textarea v-model="desc" @blur="changeDesc" placeholder="Markdown supported!"></textarea>
+          <p>Add or update description for this rule(Markdown supported)</p>
         </div>
       </main>
     </section>
@@ -33,10 +33,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, inject, PropType, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { defineComponent, ref, inject, PropType } from 'vue'
+import { useRouter } from 'vue-router'
 import type { Rule } from '@/typings'
-import { ruleContext, NAME_PATTERN, validateName } from '@/shared/rules'
+import { ruleContext, validateName } from '@/shared/rules'
 import { ElMessage } from 'element-plus'
 
 export default defineComponent({

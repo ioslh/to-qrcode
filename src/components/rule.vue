@@ -11,7 +11,7 @@
         <span class="tag raw" v-if="rule.raw">Shared</span>
         <span class="tag builtin" v-else-if="rule.builtin">Builtin</span>
         <h2>{{ rule.name }}</h2>
-        <div>{{ rule.desc }}</div>
+        <div class="markdown" v-html="descRender"></div>
       </div>
       <a class="action" v-if="rule.raw" @click="onSaveAs">Save locally</a>
       <a v-else class="action" @click="onShare">Open share link</a>
@@ -35,6 +35,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, inject, PropType, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import MarkdownIt from 'markdown-it'
 import Generate from '@/pages/generate.vue'
 import Settings from '@/pages/settings.vue'
 import Editor from '@/pages/editor.vue'
@@ -45,10 +46,9 @@ import type { Rule } from '@/typings'
 import { utoa, idGenerator } from '@/shared/utils'
 import Storage from '@/shared/storage'
 
-interface MenuItem {
-  name: string
-  key: string
-}
+const markdownParser = new MarkdownIt({
+  linkify: true,
+})
 
 const ShareStorageKey = '__show_share_tip__'
 
@@ -67,9 +67,9 @@ export default defineComponent({
     }
   },
   emits: [],
-  setup(props, { emit }){
+  setup(props){
     const showShareTip = ref(Storage.get(ShareStorageKey, true))
-    const { update, remove, rules, add } = inject(ruleContext)!
+    const { remove, rules, add } = inject(ruleContext)!
     const route = useRoute()
     const router = useRouter()
     const menus = computed(() => {
@@ -92,6 +92,12 @@ export default defineComponent({
       }])
     })
 
+    const descRender = computed(() => {
+      if (props.rule.desc) {
+        return markdownParser.renderInline(props.rule.desc)
+      }
+      return ''
+    })
     const menu = ref('gen')
     const runtimeMenu = computed({
       get: () => {
@@ -151,6 +157,7 @@ export default defineComponent({
  
     return {
       menus,
+      descRender,
       onShare,
       onSaveAs,
       onRemove,
@@ -224,13 +231,21 @@ header {
     font-size: 26px;
   }
   div {
-    color: #ccc;
+    height: 32px;
     font-size: 12px;
     margin-left: 20px;
     overflow: scroll;
+    word-break: break-all;
     &::-webkit-scrollbar {
       display: none;
     }
+  }
+}
+
+.markdown {
+  color: #aaa;
+  :deep(a) {
+    color: #888;
   }
 }
 
