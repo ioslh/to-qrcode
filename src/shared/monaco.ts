@@ -187,9 +187,12 @@ const normalizeValue = (v: any, type: ts.SyntaxKind): Primitive => {
     case syntaxKind.NumericLiteral:
       return Number(v)
     case syntaxKind.BooleanKeyword:
-    case syntaxKind.TrueKeyword:
-    case syntaxKind.FalseKeyword:
+      // TODO still buggy to be fixed
       return Boolean(v)
+    case syntaxKind.TrueKeyword:
+      return true
+    case syntaxKind.FalseKeyword:
+      return false
   }
   return v
 }
