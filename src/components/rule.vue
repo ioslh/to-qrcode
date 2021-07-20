@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, inject, PropType, watch } from 'vue'
+import { computed, defineComponent, ref, inject, PropType, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MarkdownIt from 'markdown-it'
 import Generate from '@/components/generate.vue'
@@ -45,6 +45,7 @@ import Error from '@/components/error.vue'
 import type { Rule } from '@/typings'
 import { utoa, idGenerator } from '@/shared/utils'
 import Storage from '@/shared/storage'
+import trackEvent from '@/shared/track'
 
 const markdownParser = new MarkdownIt({
   linkify: true,
@@ -143,6 +144,7 @@ export default defineComponent({
         name: newName,
         raw: false,
       }
+      trackEvent('fork-rule', { name: props.rule.name })
       add(rule)
       router.push(`/rules/${newName}/gen`)
     }
@@ -154,7 +156,11 @@ export default defineComponent({
     watch(showShareTip, v => {
       Storage.set(ShareStorageKey, v)
     })
- 
+
+    onMounted(() => {
+      trackEvent('use-rule', { name: props.rule.name })
+    })
+
     return {
       menus,
       descRender,

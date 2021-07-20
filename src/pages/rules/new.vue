@@ -16,6 +16,7 @@
 import { defineComponent, inject, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ruleContext, validateName } from '@/shared/rules'
+import trackEvent from '@/shared/track'
 
 export default defineComponent({
   props: {},
@@ -30,6 +31,7 @@ export default defineComponent({
       try {
         await validateName(name.value, rules.value)
         add({ name: name.value })
+        trackEvent('create-rule', { name: name.value })
         router.push(`/rules/${name.value}/edit`)
       } catch (e) {
         error.value = e.message

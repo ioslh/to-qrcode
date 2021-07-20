@@ -38,6 +38,7 @@ import { useRouter } from 'vue-router'
 import type { Rule } from '@/typings'
 import { ruleContext, validateName } from '@/shared/rules'
 import { ElMessage } from 'element-plus'
+import trackEvent from '@/shared/track'
 
 export default defineComponent({
   props: {
@@ -51,6 +52,7 @@ export default defineComponent({
     const router = useRouter()
     const { update, remove, rules, rename } = inject(ruleContext)!
     const onRemove = () => {
+      trackEvent('remove-rule', { name: props.rule.name })
       remove(props.rule)
       router.push(`/rules/${rules.value[0].name}/gen`)
     }
