@@ -52,6 +52,55 @@ defineRule((i: Input) => {
     builtin: true,
   },
   {
+    name: 'vCard',
+    desc: '[vCard format v3](https://www.evenx.com/vcard-3-0-format-specification)',
+    func: `interface User {
+  /** @label Lastname */
+  ln?: string
+  /** @label Surname */
+  sn?: string
+  /** @label Displayname */
+  dn?: string
+  /** @label Organization */
+  org?: string
+  /** @label URL */
+  url?: string
+  /** @label Email */
+  email?: string
+  /** @label Telephone */
+  tel?: string
+}
+
+defineRule((u: User) => {
+  const lines = [
+    'BEGIN:VCARD',
+    'VERSION:3.0',
+  ]
+  if (u.ln || u.sn) {
+    lines.push(\`N:\${u.ln || ''};\${u.sn || ''}\`)
+  }
+  if (u.dn) {
+    lines.push(\`FN:\${u.dn}\`)
+  }
+  if (u.org) {
+    lines.push(\`ORG:\${u.org}\`)
+  }
+  if (u.url) {
+    lines.push(\`URL:\${u.url}\`)
+  }
+  if (u.email) {
+    lines.push(\`EMAIL:\${u.email}\`)
+  }
+  if (u.tel) {
+    lines.push(\`TEL:\${u.tel}\`)
+  }
+
+  lines.push('END:VCARD')
+  return lines.join('\\n')
+})`,
+  builtin: true,
+  },
+  {
     name: 'eleme',
     desc: 'Eleme app scheme',
     func: `interface Input {
