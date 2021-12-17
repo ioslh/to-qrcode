@@ -17,9 +17,10 @@
       </li>
     </ul>
     <div class="copyright">
-      <a target="_blank" href="https://github.com/ioslh/to-qrcode">
+      <a class="github" target="_blank" href="https://github.com/ioslh/to-qrcode">
         open source
       </a>
+      <a class="beian" target="_blank" href="https://beian.miit.gov.cn/">沪ICP备2021017839号-1</a>
     </div>
   </nav>
   <main>
@@ -232,17 +233,23 @@ nav {
 
 .copyright {
   background: #fff;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
   border-top: 1px solid #eee;
+  padding: 5px 0;
   a {
+    display: flex;
+    align-items: center;
     color: #999;
     font-size: 12px;
     text-decoration: none;
-    background: url('/github.svg') left center/contain no-repeat;
-    padding-left: 26px;
+    height: 26px;
+    background: left center/16px no-repeat;
+    padding-left: 20px;
+    &.github {
+      background-image: url('/github.svg');
+    }
+    &.beian {
+      background-image: url('/beian.png');
+    }
   }
 }
 
