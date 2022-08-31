@@ -20,7 +20,6 @@
       <a class="github" target="_blank" href="https://github.com/ioslh/to-qrcode">
         open source
       </a>
-      <a class="beian" target="_blank" href="https://beian.miit.gov.cn/">沪ICP备2021017839号-1</a>
     </div>
   </nav>
   <main>
