@@ -75,7 +75,7 @@
           <div class="step-card">
             <div class="step-num">2</div>
             <img src="https://to-qrcode.oss-cn-beijing.aliyuncs.com/form.png" alt="Fill the form" class="step-img" />
-            <p>Fill the auto-generated form &amp; get your QR code</p>
+            <p>Fill the auto-generated form and get your QR code</p>
           </div>
         </div>
       </div>
