@@ -1,57 +1,48 @@
 <template>
-  <div class="logo">
-    <i></i>
-    <i></i>
-    <i></i>
-    <i></i>
+  <div class="qr-logo" :style="{ width: size + 'px', height: size + 'px' }">
+    <i></i><i></i><i></i><i></i>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
-
-export default defineComponent({
-  props: {},
-  emits: [],
-  setup(props, { emit }){
-    return {}
-  }
-})
+<script setup lang="ts">
+defineProps<{ size?: number }>()
 </script>
 
-<style lang="scss" scoped>
-.logo {
-  width: 22px;
-  height: 22px;
+<style scoped>
+.qr-logo {
   display: inline-block;
   position: relative;
-  i {
-    width: 10px;
-    height: 10px;
-    position: absolute;
-    border: 3px solid transparent;
-    border-radius: 2px;
-    &:nth-child(1) {
-      left: 0;
-      top: 0;
-      border-color: #4284f3;
-    }
-    &:nth-child(2) {
-      left: 12px;
-      top: 0;
-      border-color: #ea4335;
-    }
-    &:nth-child(3) {
-      left: 0;
-      top: 12px;
-      border-color: #fabc05;
-    }
-    &:nth-child(4) {
-      left: 12px;
-      top: 12px;
-      border-color: #ccc;
-      background: #ccc;
-    }
-  }
+  flex-shrink: 0;
+}
+
+.qr-logo i {
+  position: absolute;
+  border-radius: 3px;
+  border: 3px solid transparent;
+}
+
+.qr-logo i:nth-child(1) {
+  left: 0; top: 0;
+  width: 48%; height: 48%;
+  border-color: hsl(221.2 83.2% 53.3%);
+}
+
+.qr-logo i:nth-child(2) {
+  right: 0; top: 0;
+  width: 48%; height: 48%;
+  border-color: hsl(0 84.2% 60.2%);
+}
+
+.qr-logo i:nth-child(3) {
+  left: 0; bottom: 0;
+  width: 48%; height: 48%;
+  border-color: hsl(38 92% 50%);
+}
+
+.qr-logo i:nth-child(4) {
+  right: 0; bottom: 0;
+  width: 48%; height: 48%;
+  border-color: hsl(var(--muted-foreground) / 0.4);
+  background: hsl(var(--muted-foreground) / 0.15);
 }
 </style>

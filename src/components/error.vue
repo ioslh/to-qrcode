@@ -1,7 +1,9 @@
 <template>
-  <div class="error">
-    <i class="iconfont iconempty"/>
-    <div class="desc">
+  <div class="error-state">
+    <div class="error-icon-wrap">
+      <FileX :size="36" />
+    </div>
+    <div class="error-content">
       <slot>
         <p>{{ desc }}</p>
       </slot>
@@ -9,36 +11,31 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
-
-export default defineComponent({
-  props: {
-    desc: String,
-  },
-  emits: [],
-  setup(props, { emit }){
-    return {}
-  }
-})
+<script setup lang="ts">
+import { FileX } from 'lucide-vue-next'
+defineProps<{ desc?: string }>()
 </script>
 
-<style lang="scss" scoped>
-.error {
+<style scoped>
+.error-state {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  i {
-    font-size: 40px;
-    color: #ec9999;
-  }
-  .desc {
-    color: #aaa;
-    font-size: 14px;
-    margin-top: 20px;
-  }
+  gap: 16px;
+  padding: 32px;
+}
+
+.error-icon-wrap {
+  color: hsl(var(--muted-foreground) / 0.5);
+}
+
+.error-content {
+  color: hsl(var(--muted-foreground));
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.6;
 }
 </style>
