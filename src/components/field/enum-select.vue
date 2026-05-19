@@ -1,64 +1,88 @@
 <template>
-  <span class="tip" v-if="!options.length">枚举配置不完整</span>
-  <el-select
-    v-if="dropdownMode"
-    :model-value="modelValue"
-    @update:model-value="onChange"
-    placeholder="请选择"
-  >
-    <el-option
-      v-for="(opt, idx) in options"
-      :key="idx"
-      :value="opt.value"
-      :label="opt.label"
-    />
-  </el-select>
-  <el-button-group v-else>
-    <el-button
-      @click="onChange(opt.value)"
-      v-for="(opt, idx) in options"
-      :key="idx"
-      :type="modelValue === opt.value ? 'primary' : undefined"
+  <span v-if="!options.length" class="incomplete-tip">Enum config is incomplete</span>
+
+  <!-- Dropdown mode (>3 options) -->
+  <Select v-else-if="dropdownMode" :model-value="String(modelValue ?? '')" @update:model-value="onChange">
+    <SelectTrigger class="w-[200px]">
+      <SelectValue placeholder="Select an option" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem v-for="opt in options" :key="String(opt.value)" :value="String(opt.value)">
+        {{ opt.label }}
+      </SelectItem>
+    </SelectContent>
+  </Select>
+
+  <!-- Button group mode (<=3 options) -->
+  <div v-else class="enum-group">
+    <button
+      v-for="opt in options"
+      :key="String(opt.value)"
+      :class="['enum-btn', { active: modelValue === opt.value }]"
+      type="button"
+      @click="onChange(String(opt.value))"
     >
       {{ opt.label }}
-    </el-button>
-  </el-button-group>
+    </button>
+  </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
-import { Param, Primitive } from '@/typings'
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { Param, Primitive } from '@/typings'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-export default defineComponent({
-  props: {
-    modelValue: {
-      type: [String, Number] as PropType<Primitive>
-    },
-    param: {
-      type: Object as PropType<Param>,
-      required: true,
-    }
-  },
-  emits: ['update:modelValue'],
-  setup(props, { emit }) {
-    const options = computed(() => props.param.options || [])
-    const dropdownMode = computed(() => options.value.length > 3)
-    const onChange = (nextValue: Primitive) => {
-      emit('update:modelValue', nextValue)
-    }
+const props = defineProps<{
+  modelValue?: Primitive
+  param: Param
+}>()
 
-    return {
-      options,
-      dropdownMode,
-      onChange,
-    }
-  }
-})
+const emit = defineEmits<{ (e: 'update:modelValue', v: Primitive): void }>()
+
+const options = computed(() => props.param.options || [])
+const dropdownMode = computed(() => options.value.length > 3)
+
+const onChange = (nextValue: string) => {
+  // find matching typed value from options
+  const match = options.value.find(o => String(o.value) === nextValue)
+  emit('update:modelValue', match ? match.value : nextValue)
+}
 </script>
 
-<style scoped lang="scss">
-.tip {
-  color: #aaa;
-  font-size: 0.8em;
+<style scoped>
+.incomplete-tip {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+}
+
+.enum-group {
+  display: inline-flex;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.enum-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  background: hsl(var(--background));
+  color: hsl(var(--muted-foreground));
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.enum-btn:not(:last-child) {
+  border-right: 1px solid hsl(var(--border));
+}
+
+.enum-btn.active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.enum-btn:hover:not(.active) {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
 }
 </style>

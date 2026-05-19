@@ -1,172 +1,239 @@
 <template>
-  <div class="settings">
-    <section>
-      <h3>Settings</h3>
-      <main>
-        <div class="name field">
-          <input type="text" v-model="name" @blur="changeName" @keyup.enter="tryChangeName">
-          <p>Change to rename</p>
+  <div class="settings-page">
+    <!-- General section -->
+    <section class="settings-section">
+      <div class="section-header">
+        <Settings2 :size="16" />
+        <h3>General</h3>
+      </div>
+      <div class="section-body">
+        <div class="field-group">
+          <Label for="rule-name">Rule name</Label>
+          <p class="field-hint">Rename this rule (letters, numbers, hyphens, underscores only)</p>
+          <Input
+            id="rule-name"
+            v-model="name"
+            @blur="changeName"
+            @keyup.enter="tryChangeName"
+            class="field-input"
+          />
         </div>
-        <div class="desc field">
-          <textarea v-model="desc" @blur="changeDesc" placeholder="Add description here, markdown supported!"></textarea>
-          <p>Add or update description for this rule(Markdown supported)</p>
+        <Separator />
+        <div class="field-group">
+          <Label for="rule-desc">Description</Label>
+          <p class="field-hint">Supports Markdown. Shown as a subtitle next to the rule name.</p>
+          <Textarea
+            id="rule-desc"
+            v-model="desc"
+            @blur="changeDesc"
+            placeholder="e.g. Generates a vCard QR code from contact info…"
+            rows="4"
+            class="field-textarea"
+          />
         </div>
-      </main>
+      </div>
     </section>
-    <section>
-      <h3>Danger</h3>
-      <main>
-        <el-popconfirm
-          v-if="!rule.builtin"
-          title="Are you sure to remove?"
-          confirmButtonText="Yes"
-          cancelButtonText="Cancel"
-          @confirm="onRemove"
-        >
-          <template #reference>
-            <button class="remove">Remove this rule</button>
-          </template>
-        </el-popconfirm>
-      </main>
+
+    <!-- Danger zone -->
+    <section class="settings-section danger-section">
+      <div class="section-header danger-header">
+        <AlertTriangle :size="16" />
+        <h3>Danger zone</h3>
+      </div>
+      <div class="section-body">
+        <div class="danger-row">
+          <div>
+            <p class="danger-title">Remove this rule</p>
+            <p class="danger-desc">This action is permanent and cannot be undone.</p>
+          </div>
+          <Dialog v-model:open="confirmOpen">
+            <DialogTrigger as-child>
+              <Button variant="destructive" size="sm">
+                <Trash2 :size="14" />
+                Remove
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Remove rule</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to remove <strong>"{{ rule.name }}"</strong>? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline" @click="confirmOpen = false">Cancel</Button>
+                <Button variant="destructive" @click="onRemove">
+                  <Trash2 :size="14" />
+                  Yes, remove
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
     </section>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, inject, PropType } from 'vue'
+<script setup lang="ts">
+import { ref, inject, PropType } from 'vue'
 import { useRouter } from 'vue-router'
+import { Settings2, AlertTriangle, Trash2 } from 'lucide-vue-next'
+import { toast } from 'vue-sonner'
 import type { Rule } from '@/typings'
 import { ruleContext, validateName } from '@/shared/rules'
-import { ElMessage } from 'element-plus'
 import trackEvent from '@/shared/track'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
+import {
+  Dialog, DialogContent, DialogDescription,
+  DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+} from '@/components/ui/dialog'
 
-export default defineComponent({
-  props: {
-    rule: {
-      type: Object as PropType<Rule>,
-      required: true,
-    }
-  },
-  emits: [],
-  setup(props, { emit }){
-    const router = useRouter()
-    const { update, remove, rules, rename } = inject(ruleContext)!
-    const onRemove = () => {
-      trackEvent('remove-rule', { name: props.rule.name })
-      remove(props.rule)
-      router.push(`/rules/${rules.value[0].name}/gen`)
-    }
-    const name = ref(props.rule.name)
-    const desc = ref(props.rule.desc || '')
+const props = defineProps<{ rule: Rule }>()
 
-    const changeName = () => {
-      const n = name.value.trim()
-      if (n === props.rule.name) return
-      try {
-        validateName(n, rules.value)
-        rename(props.rule.name, n)
-        router.push(`/rules/${n}/settings`)
-      } catch(e) {
-        ElMessage.warning(e.message || 'Rule name is invalid')
-        name.value = props.rule.name
-      }
-    }
+const router = useRouter()
+const { update, remove, rules, rename } = inject(ruleContext)!
+const confirmOpen = ref(false)
 
-    const tryChangeName = (e: any) => {
-      // trigger rename
-      e.target.blur()
-    }
+const name = ref(props.rule.name)
+const desc = ref(props.rule.desc || '')
 
-    const changeDesc = () => {
-      const d = desc.value.trim()
-      if (d === props.rule.desc) return
-      const newRule = {
-        ...props.rule,
-        desc: d,
-      }
-      update(newRule)
-    }
+const onRemove = () => {
+  trackEvent('remove-rule', { name: props.rule.name })
+  remove(props.rule)
+  confirmOpen.value = false
+  toast.success(`Rule "${props.rule.name}" removed`)
+  router.push(`/rules/${rules.value[0].name}/gen`)
+}
 
-    return {
-      name,
-      desc,
-      onRemove,
-      changeName,
-      changeDesc,
-      tryChangeName,
-    }
+const changeName = () => {
+  const n = name.value.trim()
+  if (n === props.rule.name) return
+  try {
+    validateName(n, rules.value)
+    rename(props.rule.name, n)
+    toast.success(`Rule renamed to "${n}"`)
+    router.push(`/rules/${n}/settings`)
+  } catch (e: any) {
+    toast.warning(e.message || 'Rule name is invalid')
+    name.value = props.rule.name
   }
-})
+}
+
+const tryChangeName = (e: any) => {
+  e.target.blur()
+}
+
+const changeDesc = () => {
+  const d = desc.value.trim()
+  if (d === props.rule.desc) return
+  update({ ...props.rule, desc: d })
+  toast.success('Description updated')
+}
 </script>
 
-<style lang="scss" scoped>
-@import "@/styles/var.scss";
-
-.settings {
+<style scoped>
+.settings-page {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  overflow-y: auto;
 }
 
-section {
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 4px;
-  background: #fff;
-  margin-bottom: 20px;
+.settings-section {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-main {
-  margin-top: 20px;
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--muted) / 0.4);
 }
 
-.remove {
-  outline: none;
-  padding: 6px 10px;
-  border: 1px solid $danger-color;
-  border-radius: 4px;
-  background: #fff;
-  color: $danger-color;
-  cursor: pointer;
-  transition: all .3s;
-  &:hover {
-    background: $danger-color;
-    color: #fff;
-  }
+.section-header h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  margin: 0;
 }
 
-.name {
-  input {
-    font-size: 14px;
-    height: 36px;
-    width: 300px;
-    text-indent: 1em;
-  }
+.section-header svg {
+  color: hsl(var(--muted-foreground));
 }
 
-.desc {
-  margin-top: 20px;
-  textarea {
-    width: 80%;
-    padding: 1em;
-    height: 160px;
-  }
+.section-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-.field {
-  input, textarea {
-    outline: none;
-    border-radius: 4px;
-    background-color: #eee;
-    border: 2px solid #eee;
-    transition:background-color .3s, border-color .3s;
-    &:hover, &:focus {
-      border-color: $main-color;
-      background-color: #fff;
-    }
-  }
-  p {
-    color: #999;
-    margin-top: 6px;
-  }
+.field-hint {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+  line-height: 1.4;
+}
+
+.field-input {
+  max-width: 320px;
+}
+
+.field-textarea {
+  max-width: 600px;
+  resize: vertical;
+}
+
+/* Danger */
+.danger-section {
+  border-color: hsl(var(--destructive) / 0.25);
+}
+
+.danger-header {
+  background: hsl(var(--destructive) / 0.05);
+  color: hsl(var(--destructive));
+}
+
+.danger-header h3,
+.danger-header svg {
+  color: hsl(var(--destructive));
+}
+
+.danger-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.danger-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+  margin: 0;
+}
+
+.danger-desc {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  margin: 4px 0 0;
 }
 </style>

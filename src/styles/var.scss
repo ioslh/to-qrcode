@@ -1,3 +1,4 @@
-// $main-color: #398efd;
-$main-color: #4284f3;
-$danger-color: #ea4335;
+// Legacy file - CSS variables now defined in global.scss :root
+// Kept for compatibility if needed
+$main-color: hsl(221.2, 83.2%, 53.3%);
+$danger-color: hsl(0, 84.2%, 60.2%);
